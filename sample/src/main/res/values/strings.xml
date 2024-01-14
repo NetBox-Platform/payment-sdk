@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">PaymentSample</string>
+
+        <string name="purchase">Purchase</string>
+        <string name="product_id_hint">Product id</string>
+        <string name="service_connection_not_connected">Service: Not Connected</string>
+        <string name="service_connection_connected">Service: Connected</string>
+        <string name="service_connection_failed">Service: Failed to Connect</string>
+</resources>
