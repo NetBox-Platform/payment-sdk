@@ -49,6 +49,7 @@ New gradle:
 Step 2. Add the dependency
 
 	dependencies {
+ 		implementation 'com.github.NetBox-Platform:payment-sdk:<latest-version>'
 	}
 	
 # Usage
@@ -85,32 +86,6 @@ Step 2. Add the dependency
         }
     }
 
-    
-### Send SKUs
-
-      // Send SKUs as a bundle
-      payment.sendSkus(
-          skusBundle = listOf(/* ... */),
-          userId = "USER_ID",
-          purchaseToken = "YOUR_PURCHASE_TOKEN",
-          identifier = "test@test.com",
-          payload = "PAYLOAD_123"
-      ) { purchaseCallback ->
-          // Handle purchase results
-      }
-
-      // Send SKUs as JSON
-      val skuListJson = /* JSON string representing a list of SKUs */
-      payment.sendSkus(
-          skusJson = skuListJson,
-          userId = "USER_ID",
-          purchaseToken = "YOUR_PURCHASE_TOKEN",
-          identifier = "test@test.com",
-          payload = "PAYLOAD_123"
-      ) { purchaseCallback ->
-          // Handle purchase results
-      }
-
 ### Via Netbox
 
     //Initiates a call to the Netbox payment service to display and handle your SKUs.
@@ -131,4 +106,4 @@ Step 2. Add the dependency
 
     
 ## Full examples are available in the links below:
-[Sample1](https://github.com/NetBox-Platform/sso/blob/main/sample/src/main/java/ir/net_box/sso_sample/SampleActivity1.kt)
+[Sample1](https://github.com/NetBox-Platform/payment-sdk/blob/main/sample/src/main/java/ir/net_box/payment_sample/MainActivity.kt)
