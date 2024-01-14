@@ -1,4 +1,4 @@
-[![](https://jitpack.io/v/NetBox-Platform/sso.svg)](https://jitpack.io/#NetBox-Platform/sso)
+[![](https://jitpack.io/v/NetBox-Platform/payment-sdk.svg)](https://jitpack.io/#NetBox-Platform/payment-sdk)
 
 
 # Netbox Payment System
