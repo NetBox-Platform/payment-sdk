@@ -18,7 +18,10 @@ internal class PaymentConnection(private val context: Context) : Payable {
 
     private var verificationServiceConnection: PaymentConnectionVerification? = null
 
-    fun startConnection(packageName: String, connectionCallback: (ConnectionCallback) -> Unit): Connection {
+    fun startConnection(
+        packageName: String,
+        connectionCallback: (ConnectionCallback) -> Unit
+    ): Connection {
         Log.d(TAG, "startConnection")
         paymentServiceConnection =
             PaymentServiceConnection(
@@ -46,7 +49,8 @@ internal class PaymentConnection(private val context: Context) : Payable {
                     e.printStackTrace()
                 }
             } else {
-                this.callback?.connectionFailed?.invoke(Throwable("Connection failed. please try again"))
+                this.callback?.connectionFailed
+                    ?.invoke(Throwable("Connection failed. please try again"))
             }
         }) {
             // onServiceDisconnected
@@ -92,7 +96,11 @@ internal class PaymentConnection(private val context: Context) : Payable {
         disconnect()
     }
 
-    override fun purchaseProductById(productId: Int, purchaseToken: String, payload: String): Bundle {
+    override fun purchaseProductById(
+        productId: Int,
+        purchaseToken: String,
+        payload: String
+    ): Bundle {
         if (isServiceBound) {
             val purchaseProductBundle =
                 paymentServiceConnection?.iPaymentService?.purchaseProductById(
@@ -196,7 +204,8 @@ internal class PaymentConnection(private val context: Context) : Payable {
     companion object {
         private const val PAYMENT_SERVICE_ACTION = "ir.net_box.payment.PaymentService.BIND"
         private const val PAYMENT_SERVICE_CLASS_NAME = "ir.net_box.store.payment.sdk.PaymentService"
-        private const val PAYMENT_SERVICE_VERIFICATION_CLASS_NAME = "ir.net_box.store.payment.sdk.PaymentServiceVerification"
+        private const val PAYMENT_SERVICE_VERIFICATION_CLASS_NAME =
+            "ir.net_box.store.payment.sdk.PaymentServiceVerification"
         private const val TAG = "PaymentConnection"
     }
 }
