@@ -78,6 +78,11 @@ Step 2. Add the dependency
 ## Purchase
 ### Purchase a product by ID
 
+     * @param productId The product ID to be purchased
+     * @param purchaseToken The unique token associated with this purchase request
+     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
+     * @param callback Callback to receive the results of the purchase operation
+     
     payment.purchaseProductById(
         productId = YOUR_PRODUCT_ID,
         purchaseToken = "YOUR_PURCHASE_TOKEN",
@@ -94,6 +99,13 @@ Step 2. Add the dependency
 ### Via Netbox
 
     //Initiates a call to the Netbox payment service to display and handle your SKUs.
+
+     * @param userId User ID associated with the purchase
+     * @param purchaseToken The unique token of this purchase request for verification
+     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
+     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
+     * @param callback Callback to receive the results of the purchase operation
+     
      payment.purchaseProductViaNetbox(
             userId = "USER_ID",
             purchaseToken = "YOUR_PURCHASE_TOKEN",
