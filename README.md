@@ -124,3 +124,5 @@ Step 2. Add the dependency
     
 ## Full examples are available in the links below:
 [Sample1](https://github.com/NetBox-Platform/payment-sdk/blob/main/sample/src/main/java/ir/net_box/payment_sample/MainActivity.kt)
+
+## NOTE: To run the sample app be sure to change the default app package name(ir.net_box.payment_sample) to your verified package name
