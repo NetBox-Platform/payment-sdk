@@ -21,6 +21,11 @@ To start using the Netbox Payment System in your app:
 
 - Follow the provided documentation to configure and customize the payment functionalities according to your app's needs.
 
+### Permission
+Add netbox payment permission 
+
+	<permission android:name="ir.net_box.permission.PAYMENT"/>
+
 ### Dependency
 
 Step 1. Add jitpack repository
