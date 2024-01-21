@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("ir.net_box.payment", appContext.packageName)
+        assertEquals("ir.net_box.payment_sample", appContext.packageName)
     }
 }
