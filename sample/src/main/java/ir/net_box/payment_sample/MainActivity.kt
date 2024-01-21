@@ -74,9 +74,20 @@ class MainActivity : AppCompatActivity() {
                         payload = "PAYLOAD_123"
                     ) {
                         it.purchaseSucceed {
-                            Log.d(TAG, "purchaseSucceed -> productId: " + it.getInt(PRODUCT_ID_ARG_KEY))
-                            Log.d(TAG, "purchaseSucceed -> payload: " + it.getString(PAYLOAD_ARG_KEY))
-                            Log.d(TAG, "purchaseSucceed -> purchaseToken: " + it.getString(PURCHASE_TOKEN_ARG_KEY))
+                            Log.d(
+                                TAG,
+                                "purchaseSucceed -> productId: " + it.getInt(PRODUCT_ID_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseSucceed -> payload: " + it.getString(PAYLOAD_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseSucceed -> purchaseToken: " + it.getString(
+                                    PURCHASE_TOKEN_ARG_KEY
+                                )
+                            )
 
                             if (it.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
                                 // Valid result
@@ -89,13 +100,28 @@ class MainActivity : AppCompatActivity() {
                         it.purchaseFailed { throwable, bundle ->
                             Log.d(TAG, "purchaseFailed: " + throwable.message)
 
-                            Log.d(TAG, "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY))
-                            Log.d(TAG, "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY))
-                            Log.d(TAG, "purchaseFailed -> purchaseToken: " + bundle.getString(PURCHASE_TOKEN_ARG_KEY))
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> purchaseToken: " + bundle.getString(
+                                    PURCHASE_TOKEN_ARG_KEY
+                                )
+                            )
 
                             if (bundle.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
                                 // Valid result
-                                Toast.makeText(this@MainActivity, "عملیات ناموفق", Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "عملیات ناموفق",
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
                                 Log.d(TAG, "purchaseFailed: " + bundle.toReadableString())
                             }
@@ -122,16 +148,32 @@ class MainActivity : AppCompatActivity() {
                         it.purchaseFailed { throwable, bundle ->
                             Log.d(TAG, "purchaseFailed: " + throwable.message)
 
-                            Log.d(TAG, "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY))
-                            Log.d(TAG, "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY))
-                            Log.d(TAG, "purchaseFailed -> purchaseToken: " + bundle.getString(PURCHASE_TOKEN_ARG_KEY))
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> purchaseToken: " + bundle.getString(
+                                    PURCHASE_TOKEN_ARG_KEY
+                                )
+                            )
 
                             if (bundle.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
                                 // Valid result
-                                Toast.makeText(this@MainActivity, "عملیات ناموفق", Toast.LENGTH_LONG)
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "عملیات ناموفق",
+                                    Toast.LENGTH_LONG
+                                )
                                     .show()
                                 Log.d(TAG, "purchaseFailed: " + bundle.toReadableString())
-                            }                        }
+                            }
+                        }
                     }
                 }
             }
