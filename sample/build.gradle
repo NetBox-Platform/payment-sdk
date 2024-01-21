@@ -20,12 +20,14 @@ android {
 
     signingConfigs {
         debug {
-            def signInfoProperties = new Properties()
-            signInfoProperties.load(project.rootProject.file('local.properties').newDataInputStream())
-            storeFile project.rootProject.file(signInfoProperties.getProperty('storeFile'))
-            storePassword signInfoProperties.getProperty('storePassword')
-            keyAlias signInfoProperties.getProperty('keyAlias')
-            keyPassword signInfoProperties.getProperty('keyPassword')
+            if (project.rootProject.file('local.properties').exists()) {
+                def signInfoProperties = new Properties()
+                signInfoProperties.load(project.rootProject.file('local.properties').newDataInputStream())
+                storeFile project.rootProject.file(signInfoProperties.getProperty('storeFile'))
+                storePassword signInfoProperties.getProperty('storePassword')
+                keyAlias signInfoProperties.getProperty('keyAlias')
+                keyPassword signInfoProperties.getProperty('keyPassword')
+            }
         }
     }
 
