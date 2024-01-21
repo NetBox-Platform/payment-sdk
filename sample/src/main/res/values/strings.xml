@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PaymentSample</string>
+    <string name="app_name">پرداخت با نت باکس</string>
 
         <string name="purchase">Purchase</string>
         <string name="product_id_hint">Product id</string>
