@@ -4,23 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
-import com.google.gson.Gson
 import ir.net_box.payment_sample.databinding.ActivityMainBinding
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.ConnectionState
 import ir.net_box.paymentclient.exception.NetStoreNotInstalledException
-import ir.net_box.paymentclient.model.SKU
 import ir.net_box.paymentclient.payment.Payment
-import ir.net_box.paymentclient.util.DESCRIPTION
-import ir.net_box.paymentclient.util.DISCOUNT
-import ir.net_box.paymentclient.util.EXTRA
-import ir.net_box.paymentclient.util.ID
 import ir.net_box.paymentclient.util.PAYLOAD_ARG_KEY
-import ir.net_box.paymentclient.util.PRICE
 import ir.net_box.paymentclient.util.PRODUCT_ID_ARG_KEY
 import ir.net_box.paymentclient.util.PURCHASE_TOKEN_ARG_KEY
-import ir.net_box.paymentclient.util.TITLE
 import ir.net_box.paymentclient.util.toReadableString
 import ir.net_box.sso.core.AppManager
 
