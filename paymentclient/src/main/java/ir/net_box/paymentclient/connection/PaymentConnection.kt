@@ -96,15 +96,15 @@ internal class PaymentConnection(private val context: Context) : Payable {
         disconnect()
     }
 
-    override fun purchaseProductById(
-        productId: Int,
+    override fun purchaseProductBySku(
+        sourceSku: String,
         purchaseToken: String,
         payload: String
     ): Bundle {
         if (isServiceBound) {
             val purchaseProductBundle =
-                paymentServiceConnection?.iPaymentService?.purchaseProductById(
-                    productId,
+                paymentServiceConnection?.iPaymentService?.purchaseProductBySku(
+                    sourceSku,
                     purchaseToken,
                     payload
                 ) ?: run {

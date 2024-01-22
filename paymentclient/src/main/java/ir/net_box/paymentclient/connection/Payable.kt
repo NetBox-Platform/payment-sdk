@@ -27,5 +27,5 @@ interface Payable {
         payload: String
     ): Bundle
 
-    fun purchaseProductById(productId: Int, purchaseToken: String, payload: String): Bundle
+    fun purchaseProductBySku(sourceSku: String, purchaseToken: String, payload: String): Bundle
 }

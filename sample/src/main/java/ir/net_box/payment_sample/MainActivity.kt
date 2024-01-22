@@ -1,5 +1,7 @@
 package ir.net_box.payment_sample
 
+import android.content.ComponentName
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -57,10 +59,10 @@ class MainActivity : AppCompatActivity() {
                     /**
                      * Create a purchase with a known product ID and receive results in a callback.
                      * In this case, you should display and allow the user to select a subscription plan in your app,
-                     * then send the product/plan ID (e.g., 1).
+                     * then send tour sku (e.g., "plan-3-months").
                      */
-                    payment.purchaseProductById(
-                        productId = 1,
+                    payment.purchaseProductBySku(
+                        sourceSku = "test-sku",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         payload = "PAYLOAD_123"
                     ) {
@@ -134,6 +136,12 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         it.purchaseSucceed {
                             Log.d(TAG, "purchaseSucceed")
+                            if (it.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
+                                // Valid result
+                                Toast.makeText(this@MainActivity, "پرداخت موفق", Toast.LENGTH_LONG)
+                                    .show()
+                                Log.d(TAG, "purchaseSucceed" + it.toReadableString())
+                            }
                         }
 
                         it.purchaseFailed { throwable, bundle ->

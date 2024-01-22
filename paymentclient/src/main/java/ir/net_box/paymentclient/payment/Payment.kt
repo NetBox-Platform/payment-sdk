@@ -50,18 +50,18 @@ class Payment(context: Context, private val packageName: String) {
     /**
      * Creates a purchase with a specified product ID, using the provided purchase token and payload.
      * After a successful purchase, the verification API is called with the purchase token.
-     * @param productId The product ID to be purchased
+     * @param sourceSku The SKU to be purchased
      * @param purchaseToken The unique token associated with this purchase request
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
      * @param callback Callback to receive the results of the purchase operation
      */
-    fun purchaseProductById(
-        productId: Int,
+    fun purchaseProductBySku(
+        sourceSku: String,
         purchaseToken: String,
         payload: String,
         callback: (PurchaseCallback) -> Unit
     ) {
-        val purchaseProduct = connection.purchaseProductById(productId, purchaseToken, payload)
+        val purchaseProduct = connection.purchaseProductBySku(sourceSku, purchaseToken, payload)
         handlePurchaseResult(purchaseProduct, callback)
     }
 

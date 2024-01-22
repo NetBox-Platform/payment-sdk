@@ -12,7 +12,7 @@ interface IPaymentService {
 
     Bundle purchaseProductViaNetbox(String userId, String purchaseToken, String identifier, String payload);
 
-    Bundle purchaseProductById(int productId, String purchaseToken, String payload);
+    Bundle purchaseProductBySku(String sourceSku, String purchaseToken, String payload);
 
     void stopConnection();
 }
