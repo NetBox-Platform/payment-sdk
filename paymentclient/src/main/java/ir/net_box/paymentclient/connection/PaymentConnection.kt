@@ -10,7 +10,7 @@ import ir.net_box.paymentclient.payment.PaymentServiceConnection
 import ir.net_box.paymentclient.util.PACKAGE_NAME_ARG_KEY
 import ir.net_box.sso.NET_STORE_PACKAGE_NAME
 
-internal class PaymentConnection(private val context: Context) : Payable {
+class PaymentConnection(private val context: Context) : Payable {
 
     private var callback: ConnectionCallback? = null
 
