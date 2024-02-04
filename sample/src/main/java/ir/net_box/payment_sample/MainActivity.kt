@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
                      * then send tour sku (e.g., "plan-3-months").
                      */
                     payment.purchaseProductBySku(
-                        sourceSku = "test-sku",
+                        sourceSku = "plan-3-months",
+                        userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         payload = "PAYLOAD_123"
                     ) {
@@ -129,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                  */
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
                     payment.purchaseProductViaNetbox(
-                        userId = "USER_ID",
+                        userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123"

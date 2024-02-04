@@ -98,6 +98,7 @@ class PaymentConnection(private val context: Context) : Payable {
 
     override fun purchaseProductBySku(
         sourceSku: String,
+        userId: String,
         purchaseToken: String,
         payload: String
     ): Bundle {
@@ -105,6 +106,7 @@ class PaymentConnection(private val context: Context) : Payable {
             val purchaseProductBundle =
                 paymentServiceConnection?.iPaymentService?.purchaseProductBySku(
                     sourceSku,
+                    userId,
                     purchaseToken,
                     payload
                 ) ?: run {

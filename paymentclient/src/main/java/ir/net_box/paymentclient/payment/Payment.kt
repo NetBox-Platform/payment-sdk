@@ -51,17 +51,19 @@ class Payment(context: Context, private val packageName: String) {
      * Creates a purchase with a specified product ID, using the provided purchase token and payload.
      * After a successful purchase, the verification API is called with the purchase token.
      * @param sourceSku The SKU to be purchased
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token associated with this purchase request
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
      * @param callback Callback to receive the results of the purchase operation
      */
     fun purchaseProductBySku(
         sourceSku: String,
+        userId: String,
         purchaseToken: String,
         payload: String,
         callback: (PurchaseCallback) -> Unit
     ) {
-        val purchaseProduct = connection.purchaseProductBySku(sourceSku, purchaseToken, payload)
+        val purchaseProduct = connection.purchaseProductBySku(sourceSku, userId, purchaseToken, payload)
         handlePurchaseResult(purchaseProduct, callback)
     }
 
@@ -69,7 +71,7 @@ class Payment(context: Context, private val packageName: String) {
      * Send all SKUs, such as subscription plans, and receive results in a callback.
      * @param skusBundle Contains all SKUs to be sent to the Netbox payment system.
      *                   @see ir.net_box.payment_sample.MainActivity
-     * @param userId User ID associated with the purchase
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token of this purchase request for verification
      * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
@@ -93,7 +95,7 @@ class Payment(context: Context, private val packageName: String) {
      * Send all SKUs, such as subscription plans, and receive results in a callback.
      * @param skusJson Contains all SKUs in json format.
      *                   @see ir.net_box.payment_sample.MainActivity
-     * @param userId User ID associated with the purchase
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token of this purchase request for verification
      * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
@@ -115,7 +117,7 @@ class Payment(context: Context, private val packageName: String) {
 
     /**
      * Initiates the purchase of a product via the Netbox payment service.
-     * @param userId User ID associated with the purchase
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token of this purchase request for verification
      * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
