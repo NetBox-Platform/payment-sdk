@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                      * then send tour sku (e.g., "plan-3-months").
                      */
                     payment.purchaseProductBySku(
-                        sourceSku = "plan-3-months",
+                        sourceSku = "test-sku",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         payload = "PAYLOAD_123"
