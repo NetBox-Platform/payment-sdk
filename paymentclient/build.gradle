@@ -62,5 +62,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     // Netbox SSO
-    implementation 'com.github.NetBox-Platform:sso:0.0.5'
+    implementation 'com.github.NetBox-Platform:sso:0.0.6'
 }
