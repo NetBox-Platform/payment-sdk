@@ -79,12 +79,14 @@ Step 2. Add the dependency
 ### Purchase a product by Source SKU
 
      * @param sourceSku The SKU to be purchased (e.g., "plan-3-months")
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token associated with this purchase request
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
      * @param callback Callback to receive the results of the purchase operation
      
     payment.purchaseProductBySku(
-        sourceSku = "test-sku",
+	sourceSku = "plan-3-months",
+	userId = "YOUR_UNIQUE_USER_ID",
         purchaseToken = "YOUR_PURCHASE_TOKEN",
         payload = "PAYLOAD_123"
     ) { purchaseCallback ->
@@ -100,14 +102,14 @@ Step 2. Add the dependency
 
       // Initiates a call to the Netbox payment service to display and handle your SKUs.
 
-     * @param userId User ID associated with the purchase
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token of this purchase request for verification
      * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
      * @param callback Callback to receive the results of the purchase operation
      
      payment.purchaseProductViaNetbox(
-            userId = "USER_ID",
+            userId = "YOUR_UNIQUE_USER_ID",
             purchaseToken = "YOUR_PURCHASE_TOKEN",
             identifier = "09123456789",
             payload = "PAYLOAD_123"
