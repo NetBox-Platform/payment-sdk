@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
                     /**
                      * Create a purchase with a known product ID and receive results in a callback.
                      * In this case, you should display and allow the user to select a subscription plan in your app,
-                     * then send tour sku (e.g., "plan-3-months").
+                     * then send your sku (e.g., "plan-3-months").
                      */
                     payment.purchaseProductBySku(
                         sourceSku = "test-sku",
