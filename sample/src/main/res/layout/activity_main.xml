@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layoutDirection="rtl"
     android:padding="30dp"
     tools:context="ir.net_box.payment_sample.MainActivity">
 
@@ -30,7 +31,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/create_single_purchase_button"
             android:textAllCaps="false"
-            android:text="Create a specify purchase request" />
+            android:text="Create a specific purchase request" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="wrap_content"
