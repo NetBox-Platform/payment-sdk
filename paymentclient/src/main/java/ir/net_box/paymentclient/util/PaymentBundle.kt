@@ -19,19 +19,28 @@ const val PURCHASE_STATUS_ARG_KEY = "purchase_status"
 const val PAYLOAD_ARG_KEY = "payload"
 const val USER_ID_ARG_KEY = "user_id"
 
-fun Bundle.isSucceed() = getInt(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
-    ServiceResultStatus.SUCCEED.statusCode
+fun Bundle.isSucceed() =
+    getInt(
+        NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.SUCCEED.statusCode
 
-fun Bundle.isFailed() = getInt(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
-    ServiceResultStatus.FAILED.statusCode
+fun Bundle.isFailed() =
+    getInt(
+        NETBOX_PAYMENT_RESULT,
+        ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.FAILED.statusCode
 
 fun Intent.isSucceed() =
-    getIntExtra(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
-            ServiceResultStatus.SUCCEED.statusCode
+    getIntExtra(
+        NETBOX_PAYMENT_RESULT,
+        ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.SUCCEED.statusCode
 
 fun Intent.isFailed() =
-    getIntExtra(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
-            ServiceResultStatus.FAILED.statusCode
+    getIntExtra(
+        NETBOX_PAYMENT_RESULT,
+        ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.FAILED.statusCode
 
 fun Bundle.toReadableString(): String {
     val stringBuilder = StringBuilder("Result{")
