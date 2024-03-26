@@ -1,10 +1,17 @@
 package ir.net_box.paymentclient.payment
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import androidx.core.content.ContextCompat
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
+import ir.net_box.paymentclient.util.NETBOX_PAYMENT_RESULT
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
 
@@ -13,9 +20,11 @@ import ir.net_box.paymentclient.util.isSucceed
  * @param packageName Your valid application package name
  * Note: Ensure that your package name has been verified by Netbox
  */
-class Payment(context: Context, private val packageName: String) {
+class Payment(private val context: Context, private val packageName: String) {
 
     private val connection = PaymentConnection(context)
+
+    private var resultBroadcastReceiver: ResultBroadcastReceiver? = null
 
     /**
      * Establishes a connection to the Netbox payment service.
@@ -40,10 +49,41 @@ class Payment(context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                purchaseCallback.purchaseFailed?.invoke(
-                    Throwable("Purchase result is unknown!"), purchaseProduct
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
+                        when {
+                            intent.isSucceed() -> {
+                                purchaseCallback.purchaseSucceed?.let { it(purchaseProduct) }
+                            }
+                            intent.isFailed() -> {
+                                purchaseCallback.purchaseFailed?.invoke(
+                                    Throwable("Purchase is failed!"), purchaseProduct
+                                )
+                            }
+                        }
+                    }
+                    ContextCompat.registerReceiver(
+                        context, resultBroadcastReceiver, IntentFilter(PAYMENT_BROADCAST_ACTION),
+                        ContextCompat.RECEIVER_EXPORTED
+                    )
+                } else {
+                    purchaseCallback.purchaseFailed?.invoke(
+                        Throwable("Purchase result is unknown!"), purchaseProduct
+                    )
+                }
             }
+        }
+    }
+
+    private inner class ResultBroadcastReceiver(
+        val result: (Intent) -> Unit
+    ) : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.d("ResultBroadcastReceiver", "onReceive: " + intent?.getIntExtra(NETBOX_PAYMENT_RESULT, -100))
+            if (intent != null) {
+                result(intent)
+            }
+            context?.unregisterReceiver(resultBroadcastReceiver)
         }
     }
 
@@ -134,5 +174,9 @@ class Payment(context: Context, private val packageName: String) {
             userId, purchaseToken, identifier, payload
         )
         handlePurchaseResult(purchaseProductViaNetbox, callback)
+    }
+
+    companion object {
+        const val PAYMENT_BROADCAST_ACTION = "ir.net_box.payment.Broadcast"
     }
 }

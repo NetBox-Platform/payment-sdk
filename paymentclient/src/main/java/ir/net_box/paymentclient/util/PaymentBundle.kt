@@ -1,5 +1,6 @@
 package ir.net_box.paymentclient.util
 
+import android.content.Intent
 import android.os.Bundle
 
 const val ID = "id"
@@ -23,6 +24,14 @@ fun Bundle.isSucceed() = getInt(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNO
 
 fun Bundle.isFailed() = getInt(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
     ServiceResultStatus.FAILED.statusCode
+
+fun Intent.isSucceed() =
+    getIntExtra(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
+            ServiceResultStatus.SUCCEED.statusCode
+
+fun Intent.isFailed() =
+    getIntExtra(NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode) ==
+            ServiceResultStatus.FAILED.statusCode
 
 fun Bundle.toReadableString(): String {
     val stringBuilder = StringBuilder("Result{")
