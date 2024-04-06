@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <permission android:name="ir.net_box.permission.PAYMENT"/>
 
+    <uses-permission android:name="ir.net_box.payment.permission.BROADCAST" />
+
     <queries>
         <package android:name="ir.net_box.payment" />
     </queries>
