@@ -128,3 +128,22 @@ Step 2. Add the dependency
 [Sample1](https://github.com/NetBox-Platform/payment-sdk/blob/main/sample/src/main/java/ir/net_box/payment_sample/MainActivity.kt)
 
 ## NOTE: To run the sample app be sure to change the default app package name(ir.net_box.payment_sample) to your verified package name
+## NOTE: In order to use netbox payment service, the user must install and update the Netstore app to minimum version of netstore that supports the payment (version 330).
+        /**
+         * Checks the installation of the Netstore (Optional).
+         * If you intend to use this verification, please include the following dependency:
+         * @see https://github.com/NetBox-Platform/sso
+         */
+        if (!AppManager.isNetstoreInstalled(applicationContext)) {
+            // Netstore is not installed yet, so you can not use the netbox payment service
+        }
+
+        /** 
+         * You can check for updates to the netstore that supports the payment service
+         * If you intend to use this check, please include the following dependency:
+         * @see https://github.com/NetBox-Platform/sso
+         */
+        if (AppManager.shouldUpdateNetstore(this, 330)) {
+            // Show a dialog to the user to update the netstore
+            AppManager.updateNetstore(this)
+        }    

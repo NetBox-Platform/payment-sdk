@@ -32,11 +32,19 @@ class MainActivity : AppCompatActivity() {
          * Checks the installation of the Netstore (Optional).
          * If you intend to use this verification, please include the following dependency:
          * @see https://github.com/NetBox-Platform/sso
-         *
-         * @throws NetStoreNotInstalledException If Netstore is not installed
          */
         if (!AppManager.isNetstoreInstalled(applicationContext)) {
-            throw NetStoreNotInstalledException()
+            // Netstore is not installed, so you can not use the netbox payment service
+        }
+
+        /**
+         * You can check for updates to the netstore that supports the payment service
+         * If you intend to use this check, please include the following dependency:
+         * @see https://github.com/NetBox-Platform/sso
+         */
+        if (AppManager.shouldUpdateNetstore(this, 330)) {
+            // Show a dialog to the user to update the netstore
+            AppManager.updateNetstore(this)
         }
 
         // Initialize the payment client with the application context and your package name
