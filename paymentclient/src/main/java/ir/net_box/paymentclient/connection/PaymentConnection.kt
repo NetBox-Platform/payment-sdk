@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.util.Log
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.exception.ServiceNotInitializedException
+import ir.net_box.paymentclient.manager.AppManager.NET_STORE_PACKAGE_NAME
 import ir.net_box.paymentclient.payment.PaymentServiceConnection
 import ir.net_box.paymentclient.util.PACKAGE_NAME_ARG_KEY
-import ir.net_box.sso.NET_STORE_PACKAGE_NAME
 
 class PaymentConnection(private val context: Context) : Payable {
 

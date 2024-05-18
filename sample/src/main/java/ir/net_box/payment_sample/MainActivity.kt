@@ -1,7 +1,5 @@
 package ir.net_box.payment_sample
 
-import android.content.ComponentName
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -9,13 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import ir.net_box.payment_sample.databinding.ActivityMainBinding
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.ConnectionState
-import ir.net_box.paymentclient.exception.NetStoreNotInstalledException
+import ir.net_box.paymentclient.manager.AppManager
 import ir.net_box.paymentclient.payment.Payment
 import ir.net_box.paymentclient.util.PAYLOAD_ARG_KEY
 import ir.net_box.paymentclient.util.PRODUCT_ID_ARG_KEY
 import ir.net_box.paymentclient.util.PURCHASE_TOKEN_ARG_KEY
 import ir.net_box.paymentclient.util.toReadableString
-import ir.net_box.sso.core.AppManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,18 +26,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         /**
-         * Checks the installation of the Netstore (Optional).
-         * If you intend to use this verification, please include the following dependency:
-         * @see https://github.com/NetBox-Platform/sso
+         * Checks the installation of the Netstore.
          */
         if (!AppManager.isNetstoreInstalled(applicationContext)) {
             // Netstore is not installed, so you can not use the netbox payment service
         }
 
         /**
-         * You can check for updates to the netstore that supports the payment service
-         * If you intend to use this check, please include the following dependency:
-         * @see https://github.com/NetBox-Platform/sso
+         * You can check for updates to the netstore that supports the payment service.
          */
         if (AppManager.shouldUpdateNetstore(this, 330)) {
             // Show a dialog to the user to update the netstore
