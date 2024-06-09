@@ -62,9 +62,9 @@ class Payment(private val context: Context, private val packageName: String) {
                             }
                         }
                     }
-                    ContextCompat.registerReceiver(
-                        context, resultBroadcastReceiver, IntentFilter(PAYMENT_BROADCAST_ACTION),
-                        ContextCompat.RECEIVER_EXPORTED
+                    context.registerReceiver(
+                        resultBroadcastReceiver,
+                        IntentFilter(PAYMENT_BROADCAST_ACTION)
                     )
                 } else {
                     purchaseCallback.purchaseFailed?.invoke(
