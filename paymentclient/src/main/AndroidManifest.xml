@@ -4,6 +4,7 @@
     <uses-permission android:name="ir.net_box.payment.permission.BROADCAST" />
 
     <queries>
+        <package android:name="ir.net_box.store" />
         <package android:name="ir.net_box.payment" />
     </queries>
 </manifest>
