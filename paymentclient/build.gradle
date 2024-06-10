@@ -10,7 +10,7 @@ file("netbox.properties").withInputStream { netboxProperties.load(it) }
 
 android {
     namespace 'ir.net_box.paymentclient'
-    compileSdk 31
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
