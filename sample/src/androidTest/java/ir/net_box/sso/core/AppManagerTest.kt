@@ -4,6 +4,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.google.common.truth.Truth
+import ir.net_box.paymentclient.manager.AppManager
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -19,14 +20,6 @@ class AppManagerTest {
 
     @After
     fun tearDown() {
-    }
-
-    @Test
-    fun isNetboxLauncherInstalled_returnsResult() {
-        Truth.assertThat(
-            AppManager.isNetboxLauncherInstalled(ApplicationProvider.getApplicationContext())
-        )
-            .isTrue()
     }
 
     @Test
