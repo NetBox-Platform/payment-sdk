@@ -22,6 +22,7 @@ android {
 
     buildTypes.each {
         it.buildConfigField 'String', 'NETBOX_CERTIFICATE', "\"${netboxProperties.getProperty('netboxHexCertificate')}\""
+        it.buildConfigField 'String', 'NETBOX_PUBLIC_CERTIFICATE', "\"${netboxProperties.getProperty('netboxPublicHexCertificate')}\""
     }
 
     buildTypes {
