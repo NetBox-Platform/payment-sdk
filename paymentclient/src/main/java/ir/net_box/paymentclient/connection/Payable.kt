@@ -31,6 +31,7 @@ interface Payable {
         sourceSku: String,
         userId: String,
         purchaseToken: String,
+        identifier: String,
         payload: String
     ): Bundle
 }

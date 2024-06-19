@@ -93,6 +93,7 @@ class Payment(private val context: Context, private val packageName: String) {
      * @param sourceSku The SKU to be purchased
      * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token associated with this purchase request
+     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email (Optional)
      * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
      * @param callback Callback to receive the results of the purchase operation
      */
@@ -100,10 +101,11 @@ class Payment(private val context: Context, private val packageName: String) {
         sourceSku: String,
         userId: String,
         purchaseToken: String,
+        identifier: String = "",
         payload: String,
         callback: (PurchaseCallback) -> Unit
     ) {
-        val purchaseProduct = connection.purchaseProductBySku(sourceSku, userId, purchaseToken, payload)
+        val purchaseProduct = connection.purchaseProductBySku(sourceSku, userId, purchaseToken, identifier, payload)
         handlePurchaseResult(purchaseProduct, callback)
     }
 

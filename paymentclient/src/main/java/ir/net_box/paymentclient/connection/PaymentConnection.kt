@@ -100,6 +100,7 @@ class PaymentConnection(private val context: Context) : Payable {
         sourceSku: String,
         userId: String,
         purchaseToken: String,
+        identifier: String,
         payload: String
     ): Bundle {
         if (isServiceBound) {
@@ -108,6 +109,7 @@ class PaymentConnection(private val context: Context) : Payable {
                     sourceSku,
                     userId,
                     purchaseToken,
+                    identifier,
                     payload
                 ) ?: run {
                     throw ServiceNotInitializedException()
