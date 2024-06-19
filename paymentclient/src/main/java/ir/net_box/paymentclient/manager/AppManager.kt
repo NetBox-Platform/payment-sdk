@@ -7,6 +7,8 @@ import android.net.Uri
 
 object AppManager {
 
+    val MINIMUM_STORE_VERSION = 330
+
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {
         context.packageManager.getPackageInfo(packageName, flags)
     } catch (e: Exception) {
