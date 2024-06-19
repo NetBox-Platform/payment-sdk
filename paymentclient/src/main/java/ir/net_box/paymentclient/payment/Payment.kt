@@ -49,7 +49,7 @@ class Payment(private val context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
                         when {
                             intent.isSucceed() -> {
