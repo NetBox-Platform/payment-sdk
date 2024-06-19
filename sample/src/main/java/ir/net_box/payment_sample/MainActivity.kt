@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         /**
          * You can check for updates to the netstore that supports the payment service.
          */
-        if (AppManager.shouldUpdateNetstore(this, 330)) {
+        if (AppManager.shouldUpdateNetstore(this, AppManager.MINIMUM_STORE_VERSION)) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
         }
@@ -66,6 +66,7 @@ class MainActivity : AppCompatActivity() {
                         sourceSku = "test-sku",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
+                        identifier = "09123456789", // Optional                        
                         payload = "PAYLOAD_123"
                     ) {
                         it.purchaseSucceed {
