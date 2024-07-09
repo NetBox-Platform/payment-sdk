@@ -139,7 +139,7 @@ Step 2. Add the dependency
         /** 
          * You can check for updates to the netstore that supports the payment service
          */
-        if (AppManager.shouldUpdateNetstore(this, 330)) {
+        if (AppManager.shouldUpdateNetstore(this, AppManager.MINIMUM_STORE_VERSION)) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
         }    
