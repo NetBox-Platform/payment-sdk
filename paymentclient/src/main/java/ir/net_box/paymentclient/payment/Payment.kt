@@ -84,7 +84,11 @@ class Payment(private val context: Context, private val packageName: String) {
             if (intent != null) {
                 result(intent)
             }
-            context?.unregisterReceiver(resultBroadcastReceiver)
+            try {
+                context?.unregisterReceiver(resultBroadcastReceiver)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
