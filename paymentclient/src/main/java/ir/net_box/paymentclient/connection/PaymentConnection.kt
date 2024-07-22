@@ -30,29 +30,31 @@ class PaymentConnection(private val context: Context) : Payable {
             )
         this.callback = ConnectionCallback(disconnect = ::disconnect).apply(connectionCallback)
 
-        verificationServiceConnection = PaymentConnectionVerification({
-            // onServiceConnected
-            verified ->
-            if (verified) {
-                try {
-                    // Second try to connect to netbox payment system
-                    context.bindService(
-                        Intent(PAYMENT_SERVICE_ACTION).apply {
-                            `package` = NET_STORE_PACKAGE_NAME
-                            setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_CLASS_NAME)
-                            putExtra(PACKAGE_NAME_ARG_KEY, packageName)
-                        },
-                        paymentServiceConnection!!, Context.BIND_AUTO_CREATE
-                    )
-                } catch (e: SecurityException) {
-                    this.callback?.connectionFailed?.invoke(e)
-                    e.printStackTrace()
+        verificationServiceConnection = PaymentConnectionVerification(
+            packageName,
+            {
+                // onServiceConnected
+                    verified ->
+                if (verified) {
+                    try {
+                        // Second try to connect to netbox payment system
+                        context.bindService(
+                            Intent(PAYMENT_SERVICE_ACTION).apply {
+                                `package` = NET_STORE_PACKAGE_NAME
+                                setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_CLASS_NAME)
+                                putExtra(PACKAGE_NAME_ARG_KEY, packageName)
+                            },
+                            paymentServiceConnection!!, Context.BIND_AUTO_CREATE
+                        )
+                    } catch (e: SecurityException) {
+                        this.callback?.connectionFailed?.invoke(e)
+                        e.printStackTrace()
+                    }
+                } else {
+                    this.callback?.connectionFailed
+                        ?.invoke(Throwable("Connection failed. please try again"))
                 }
-            } else {
-                this.callback?.connectionFailed
-                    ?.invoke(Throwable("Connection failed. please try again"))
-            }
-        }) {
+            }) {
             // onServiceDisconnected
             this.callback?.connectionFailed?.invoke(Throwable("Bad request!"))
         }

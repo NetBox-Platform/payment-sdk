@@ -6,8 +6,11 @@ import android.os.IBinder
 import android.os.Message
 import android.os.Messenger
 import android.util.Log
+import androidx.core.os.bundleOf
+import ir.net_box.paymentclient.util.PACKAGE_NAME_ARG_KEY
 
 internal class PaymentConnectionVerification(
+    private val packageName: String,
     private val onServiceConnected: (Boolean) -> Unit,
     private val onServiceDisconnected: () -> Unit
 ) {
@@ -44,6 +47,9 @@ internal class PaymentConnectionVerification(
         val message: Message = Message.obtain(null, 1000, 0, 0)
         return try {
             Log.d("Verification", "verifyService: $message")
+            message.data = bundleOf(
+                PACKAGE_NAME_ARG_KEY to packageName
+            )
             mService?.send(message)
             true
         } catch (e: Exception) {
