@@ -19,6 +19,8 @@ const val PURCHASE_STATUS_ARG_KEY = "purchase_status"
 const val PAYLOAD_ARG_KEY = "payload"
 const val USER_ID_ARG_KEY = "user_id"
 
+const val useBroadCastForPaymentCallbacks = true
+
 fun Bundle.isSucceed() =
     getInt(
         NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode

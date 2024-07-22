@@ -14,6 +14,7 @@ import ir.net_box.paymentclient.connection.PaymentConnection
 import ir.net_box.paymentclient.util.NETBOX_PAYMENT_RESULT
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
+import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
 
 /**
  * @param context The application context
@@ -49,7 +50,7 @@ class Payment(private val context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (useBroadCastForPaymentCallbacks) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
                         when {
                             intent.isSucceed() -> {
