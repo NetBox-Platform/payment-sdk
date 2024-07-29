@@ -1,16 +1,24 @@
 package ir.net_box.paymentclient.connection
 
+import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.exception.ServiceNotInitializedException
 import ir.net_box.paymentclient.manager.AppManager.NET_STORE_PACKAGE_NAME
+import ir.net_box.paymentclient.payment.Payment.Companion.PAYMENT_INTENT_BROADCAST_ACTION
 import ir.net_box.paymentclient.payment.PaymentServiceConnection
-import ir.net_box.paymentclient.util.PACKAGE_NAME_ARG_KEY
+import ir.net_box.paymentclient.util.*
 
-class PaymentConnection(private val context: Context) : Payable {
+class PaymentConnection(
+    private val context: Context,
+    private val packageName: String
+) : Payable {
 
     private var callback: ConnectionCallback? = null
 
@@ -18,11 +26,19 @@ class PaymentConnection(private val context: Context) : Payable {
 
     private var verificationServiceConnection: PaymentConnectionVerification? = null
 
+    private var isServiceBound = false
+
+    private var shouldUseIntent = false
+    private var connectionBroadcastReceiver: ConnectionBroadcastReceiver? = null
+    private var isReceiverRegistered = false
+
     fun startConnection(
-        packageName: String,
         connectionCallback: (ConnectionCallback) -> Unit
     ): Connection {
         Log.d(TAG, "startConnection")
+
+        shouldUseIntent = false
+
         paymentServiceConnection =
             PaymentServiceConnection(
                 ::onServiceConnected,
@@ -35,7 +51,7 @@ class PaymentConnection(private val context: Context) : Payable {
             {
                 // onServiceConnected
                     verified ->
-                if (verified) {
+                if (verified && !shouldUseIntent) {
                     try {
                         // Second try to connect to netbox payment system
                         context.bindService(
@@ -61,7 +77,7 @@ class PaymentConnection(private val context: Context) : Payable {
 
         // First we verify your app validation
         try {
-            context.bindService(
+            val bindService = context.bindService(
                 Intent(PAYMENT_SERVICE_ACTION).apply {
                     `package` = NET_STORE_PACKAGE_NAME
                     setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_VERIFICATION_CLASS_NAME)
@@ -69,13 +85,65 @@ class PaymentConnection(private val context: Context) : Payable {
                 },
                 verificationServiceConnection!!.mConnection, Context.BIND_AUTO_CREATE
             )
+            if (!bindService) {
+                startConnectionViaIntent()
+            }
         } catch (e: SecurityException) {
             e.printStackTrace()
+            startConnectionViaIntent()
         }
         return requireNotNull(this.callback)
     }
 
-    private var isServiceBound = false
+    private fun startConnectionViaIntent() {
+        shouldUseIntent = true
+        context.startActivity(
+            getPaymentIntent().apply {
+                putExtra(CONNECTION_START, true)
+            }
+        )
+        registerConnectionBroadCastIfNeeded()
+    }
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private fun registerConnectionBroadCastIfNeeded() {
+        if (connectionBroadcastReceiver == null) {
+            connectionBroadcastReceiver = ConnectionBroadcastReceiver { errorCode ->
+                if (errorCode == ErrorType.NO_ERROR.code) {
+                    callback?.connectionSucceed?.invoke()
+                } else {
+                    val errorType = ErrorType.values().find {
+                        it.code == errorCode
+                    }?.name?.lowercase()
+                    this.callback?.connectionFailed?.invoke(Throwable("Reason: $errorType"))
+                }
+            }
+        }
+        if (!isReceiverRegistered) {
+            context.registerReceiver(
+                connectionBroadcastReceiver,
+                IntentFilter(PAYMENT_INTENT_BROADCAST_ACTION)
+            )
+            isReceiverRegistered = true
+        }
+    }
+
+    private inner class ConnectionBroadcastReceiver(
+        val result: (Int) -> Unit
+    ) : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action != PAYMENT_INTENT_BROADCAST_ACTION) return
+            result(
+                intent.getIntExtra(NETBOX_PAYMENT_CONNECTION_RESULT, -100)
+            )
+            try {
+                context?.unregisterReceiver(connectionBroadcastReceiver)
+                isReceiverRegistered = false
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     private fun onServiceConnected() {
         isServiceBound = true
@@ -117,6 +185,21 @@ class PaymentConnection(private val context: Context) : Payable {
                     throw ServiceNotInitializedException()
                 }
             return purchaseProductBundle
+        } else if (shouldUseIntent) {
+            context.startActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 1)
+                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
+                        userId,
+                        purchaseToken,
+                        identifier,
+                        payload
+                    ).apply {
+                        putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                    })
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
         } else {
             throw ServiceNotInitializedException()
         }
@@ -137,6 +220,21 @@ class PaymentConnection(private val context: Context) : Payable {
                     throw ServiceNotInitializedException()
                 }
             return skuDetailsBundle
+        } else if (shouldUseIntent) {
+            context.startActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 3)
+                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
+                        userId,
+                        purchaseToken,
+                        identifier,
+                        payload
+                    ).apply {
+                        putParcelableArrayList(SKUS_ARG_KEY, ArrayList(skusBundle))
+                    })
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
         } else {
             throw ServiceNotInitializedException()
         }
@@ -157,6 +255,21 @@ class PaymentConnection(private val context: Context) : Payable {
                     throw ServiceNotInitializedException()
                 }
             return skuDetailsBundle
+        } else if (shouldUseIntent) {
+            context.startActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 4)
+                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
+                        userId,
+                        purchaseToken,
+                        identifier,
+                        payload
+                    ).apply {
+                        putString(SKUS_ARG_KEY, skusJson)
+                    })
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
         } else {
             throw ServiceNotInitializedException()
         }
@@ -176,10 +289,37 @@ class PaymentConnection(private val context: Context) : Payable {
                     throw ServiceNotInitializedException()
                 }
             return skuDetailsBundle
+        } else if (shouldUseIntent) {
+            context.startActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 2)
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS, getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload
+                        )
+                    )
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
         } else {
             throw ServiceNotInitializedException()
         }
     }
+
+    private fun getResultBundle(
+        userId: String,
+        purchaseToken: String,
+        identifier: String,
+        payload: String
+    ) = Bundle().apply {
+            putString(SOURCE_USER_ID_ARG_KEY, userId)
+            putString(PURCHASE_TOKEN_ARG_KEY, purchaseToken)
+            putString(IDENTIFIER_ARG_KEY, identifier)
+            putString(PAYLOAD_ARG_KEY, payload)
+        }
 
     private fun disconnect() {
         isServiceBound = false
@@ -205,7 +345,28 @@ class PaymentConnection(private val context: Context) : Payable {
         paymentServiceConnection = null
         callback?.disconnected?.invoke()
         callback = null
+
+        if (shouldUseIntent) {
+            shouldUseIntent = false
+            context.startActivity(
+                getPaymentIntent().apply {
+                    putExtra(CONNECTION_END, true)
+                }
+            )
+        }
+        isReceiverRegistered = false
     }
+
+    private fun getPaymentIntent() =
+        Intent(PAYMENT_SERVICE_ACTION).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            component = ComponentName.unflattenFromString(
+                "$NET_STORE_PACKAGE_NAME/$NET_STORE_PACKAGE_NAME" +
+                        ".PaymentInitializationActivity"
+            )
+            `package` = NET_STORE_PACKAGE_NAME
+            putExtra(PACKAGE_NAME_ARG_KEY, packageName)
+        }
 
     companion object {
         private const val PAYMENT_SERVICE_ACTION = "ir.net_box.payment.PaymentService.BIND"
@@ -213,5 +374,10 @@ class PaymentConnection(private val context: Context) : Payable {
         private const val PAYMENT_SERVICE_VERIFICATION_CLASS_NAME =
             "ir.net_box.store.payment.sdk.PaymentServiceVerification"
         private const val TAG = "PaymentConnection"
+
+        private const val CONNECTION_START = "payment_init"
+        private const val CONNECTION_END = "payment_end"
+        private const val PAYMENT_TYPE = "payment_type"
+        private const val PAYMENT_BUNDLE_ARGS = "payment_bundle_args"
     }
 }

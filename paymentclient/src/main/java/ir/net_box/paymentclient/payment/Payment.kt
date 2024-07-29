@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.core.content.ContextCompat
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
@@ -23,7 +21,7 @@ import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
  */
 class Payment(private val context: Context, private val packageName: String) {
 
-    private val connection = PaymentConnection(context)
+    private val connection = PaymentConnection(context, packageName)
 
     private var resultBroadcastReceiver: ResultBroadcastReceiver? = null
 
@@ -35,7 +33,7 @@ class Payment(private val context: Context, private val packageName: String) {
      * @return A Connection interface that allows you to disconnect from the service or retrieve the current connection state
      */
     fun connect(callback: (ConnectionCallback) -> Unit): Connection {
-        return connection.startConnection(packageName, callback)
+        return connection.startConnection(callback)
     }
 
     private fun handlePurchaseResult(purchaseProduct: Bundle, callback: (PurchaseCallback) -> Unit) {
@@ -185,5 +183,6 @@ class Payment(private val context: Context, private val packageName: String) {
 
     companion object {
         const val PAYMENT_BROADCAST_ACTION = "ir.net_box.payment.Broadcast"
+        const val PAYMENT_INTENT_BROADCAST_ACTION = "ir.net_box.payment.intent.Broadcast"
     }
 }
