@@ -50,7 +50,7 @@ class PaymentConnection(
             packageName,
             {
                 // onServiceConnected
-                    verified ->
+                verified ->
                 if (verified && !shouldUseIntent) {
                     try {
                         // Second try to connect to netbox payment system
@@ -70,21 +70,15 @@ class PaymentConnection(
                     this.callback?.connectionFailed
                         ?.invoke(Throwable("Connection failed. please try again"))
                 }
-            }) {
+            }
+        ) {
             // onServiceDisconnected
             this.callback?.connectionFailed?.invoke(Throwable("Bad request!"))
         }
 
         // First we verify your app validation
         try {
-            val bindService = context.bindService(
-                Intent(PAYMENT_SERVICE_ACTION).apply {
-                    `package` = NET_STORE_PACKAGE_NAME
-                    setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_VERIFICATION_CLASS_NAME)
-                    putExtra(PACKAGE_NAME_ARG_KEY, packageName)
-                },
-                verificationServiceConnection!!.mConnection, Context.BIND_AUTO_CREATE
-            )
+            val bindService = false
             if (!bindService) {
                 startConnectionViaIntent()
             }
@@ -189,14 +183,17 @@ class PaymentConnection(
             context.startActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 1)
-                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
-                        userId,
-                        purchaseToken,
-                        identifier,
-                        payload
-                    ).apply {
-                        putString(SOURCE_SKU_ARG_KEY, sourceSku)
-                    })
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload
+                        ).apply {
+                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                        }
+                    )
                 }
             )
             return getResultBundle(userId, purchaseToken, identifier, payload)
@@ -224,14 +221,17 @@ class PaymentConnection(
             context.startActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 3)
-                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
-                        userId,
-                        purchaseToken,
-                        identifier,
-                        payload
-                    ).apply {
-                        putParcelableArrayList(SKUS_ARG_KEY, ArrayList(skusBundle))
-                    })
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload
+                        ).apply {
+                            putParcelableArrayList(SKUS_ARG_KEY, ArrayList(skusBundle))
+                        }
+                    )
                 }
             )
             return getResultBundle(userId, purchaseToken, identifier, payload)
@@ -259,14 +259,17 @@ class PaymentConnection(
             context.startActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 4)
-                    putExtra(PAYMENT_BUNDLE_ARGS, getResultBundle(
-                        userId,
-                        purchaseToken,
-                        identifier,
-                        payload
-                    ).apply {
-                        putString(SKUS_ARG_KEY, skusJson)
-                    })
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload
+                        ).apply {
+                            putString(SKUS_ARG_KEY, skusJson)
+                        }
+                    )
                 }
             )
             return getResultBundle(userId, purchaseToken, identifier, payload)
@@ -294,7 +297,8 @@ class PaymentConnection(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 2)
                     putExtra(
-                        PAYMENT_BUNDLE_ARGS, getResultBundle(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
                             userId,
                             purchaseToken,
                             identifier,
@@ -315,11 +319,11 @@ class PaymentConnection(
         identifier: String,
         payload: String
     ) = Bundle().apply {
-            putString(SOURCE_USER_ID_ARG_KEY, userId)
-            putString(PURCHASE_TOKEN_ARG_KEY, purchaseToken)
-            putString(IDENTIFIER_ARG_KEY, identifier)
-            putString(PAYLOAD_ARG_KEY, payload)
-        }
+        putString(SOURCE_USER_ID_ARG_KEY, userId)
+        putString(PURCHASE_TOKEN_ARG_KEY, purchaseToken)
+        putString(IDENTIFIER_ARG_KEY, identifier)
+        putString(PAYLOAD_ARG_KEY, payload)
+    }
 
     private fun disconnect() {
         isServiceBound = false
@@ -362,7 +366,7 @@ class PaymentConnection(
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             component = ComponentName.unflattenFromString(
                 "$NET_STORE_PACKAGE_NAME/$NET_STORE_PACKAGE_NAME" +
-                        ".PaymentInitializationActivity"
+                    ".PaymentInitializationActivity"
             )
             `package` = NET_STORE_PACKAGE_NAME
             putExtra(PACKAGE_NAME_ARG_KEY, packageName)

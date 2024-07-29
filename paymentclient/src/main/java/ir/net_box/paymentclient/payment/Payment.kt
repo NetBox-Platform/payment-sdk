@@ -36,7 +36,10 @@ class Payment(private val context: Context, private val packageName: String) {
         return connection.startConnection(callback)
     }
 
-    private fun handlePurchaseResult(purchaseProduct: Bundle, callback: (PurchaseCallback) -> Unit) {
+    private fun handlePurchaseResult(
+        purchaseProduct: Bundle,
+        callback: (PurchaseCallback) -> Unit
+    ) {
         val purchaseCallback = PurchaseCallback().apply(callback)
         when {
             purchaseProduct.isSucceed() -> {
@@ -78,7 +81,6 @@ class Payment(private val context: Context, private val packageName: String) {
         val result: (Intent) -> Unit
     ) : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("ResultBroadcastReceiver", "onReceive: " + intent?.getIntExtra(NETBOX_PAYMENT_RESULT, -100))
             if (intent != null) {
                 result(intent)
             }
@@ -108,7 +110,8 @@ class Payment(private val context: Context, private val packageName: String) {
         payload: String,
         callback: (PurchaseCallback) -> Unit
     ) {
-        val purchaseProduct = connection.purchaseProductBySku(sourceSku, userId, purchaseToken, identifier, payload)
+        val purchaseProduct =
+            connection.purchaseProductBySku(sourceSku, userId, purchaseToken, identifier, payload)
         handlePurchaseResult(purchaseProduct, callback)
     }
 
