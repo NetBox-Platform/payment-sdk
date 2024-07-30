@@ -78,7 +78,14 @@ class PaymentConnection(
 
         // First we verify your app validation
         try {
-            val bindService = false
+            val bindService = context.bindService(
+                Intent(PAYMENT_SERVICE_ACTION).apply {
+                    `package` = NET_STORE_PACKAGE_NAME
+                    setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_VERIFICATION_CLASS_NAME)
+                    putExtra(PACKAGE_NAME_ARG_KEY, packageName)
+                },
+                verificationServiceConnection!!.mConnection, Context.BIND_AUTO_CREATE
+            )
             if (!bindService) {
                 startConnectionViaIntent()
             }
@@ -130,12 +137,6 @@ class PaymentConnection(
             result(
                 intent.getIntExtra(NETBOX_PAYMENT_CONNECTION_RESULT, -100)
             )
-            try {
-                context?.unregisterReceiver(connectionBroadcastReceiver)
-                isReceiverRegistered = false
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
         }
     }
 
@@ -358,7 +359,13 @@ class PaymentConnection(
                 }
             )
         }
-        isReceiverRegistered = false
+
+        runCatching {
+            isReceiverRegistered = false
+            context.unregisterReceiver(connectionBroadcastReceiver)
+        }.onFailure {
+            it.printStackTrace()
+        }
     }
 
     private fun getPaymentIntent() =

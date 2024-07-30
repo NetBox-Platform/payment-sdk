@@ -1,15 +1,14 @@
 package ir.net_box.paymentclient.payment
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
-import ir.net_box.paymentclient.util.NETBOX_PAYMENT_RESULT
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
 import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
@@ -25,6 +24,8 @@ class Payment(private val context: Context, private val packageName: String) {
 
     private var resultBroadcastReceiver: ResultBroadcastReceiver? = null
 
+    private var isReceiverRegistered = false
+
     /**
      * Establishes a connection to the Netbox payment service.
      * Note: Before performing any other actions, it is essential to connect to the Netbox payment service using this function.
@@ -36,6 +37,7 @@ class Payment(private val context: Context, private val packageName: String) {
         return connection.startConnection(callback)
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun handlePurchaseResult(
         purchaseProduct: Bundle,
         callback: (PurchaseCallback) -> Unit
@@ -51,7 +53,7 @@ class Payment(private val context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                if (useBroadCastForPaymentCallbacks) {
+                if (useBroadCastForPaymentCallbacks && !isReceiverRegistered) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
                         when {
                             intent.isSucceed() -> {
@@ -68,6 +70,7 @@ class Payment(private val context: Context, private val packageName: String) {
                         resultBroadcastReceiver,
                         IntentFilter(PAYMENT_BROADCAST_ACTION)
                     )
+                    isReceiverRegistered = true
                 } else {
                     purchaseCallback.purchaseFailed?.invoke(
                         Throwable("Purchase result is unknown!"), purchaseProduct
@@ -84,10 +87,13 @@ class Payment(private val context: Context, private val packageName: String) {
             if (intent != null) {
                 result(intent)
             }
-            try {
+            runCatching {
                 context?.unregisterReceiver(resultBroadcastReceiver)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }.onSuccess {
+                isReceiverRegistered = false
+            }.onFailure {
+                it.printStackTrace()
+                isReceiverRegistered = false
             }
         }
     }
