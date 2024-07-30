@@ -366,6 +366,8 @@ class PaymentConnection(
         }.onFailure {
             it.printStackTrace()
         }
+
+        connectionBroadcastReceiver = null
     }
 
     private fun getPaymentIntent() =
