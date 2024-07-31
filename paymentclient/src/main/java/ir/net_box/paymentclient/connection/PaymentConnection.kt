@@ -175,7 +175,8 @@ class PaymentConnection(
                     userId,
                     purchaseToken,
                     identifier,
-                    payload
+                    payload,
+                    packageName
                 ) ?: run {
                     throw ServiceNotInitializedException()
                 }
@@ -190,7 +191,8 @@ class PaymentConnection(
                             userId,
                             purchaseToken,
                             identifier,
-                            payload
+                            payload,
+                            packageName
                         ).apply {
                             putString(SOURCE_SKU_ARG_KEY, sourceSku)
                         }
@@ -213,7 +215,7 @@ class PaymentConnection(
         if (isServiceBound) {
             val skuDetailsBundle =
                 paymentServiceConnection?.iPaymentService?.sendSkuDetails(
-                    skusBundle, userId, purchaseToken, identifier, payload
+                    skusBundle, userId, purchaseToken, identifier, payload, packageName
                 ) ?: run {
                     throw ServiceNotInitializedException()
                 }
@@ -228,7 +230,8 @@ class PaymentConnection(
                             userId,
                             purchaseToken,
                             identifier,
-                            payload
+                            payload,
+                            packageName
                         ).apply {
                             putParcelableArrayList(SKUS_ARG_KEY, ArrayList(skusBundle))
                         }
@@ -251,7 +254,7 @@ class PaymentConnection(
         if (isServiceBound) {
             val skuDetailsBundle =
                 paymentServiceConnection?.iPaymentService?.sendSkuDetailsJson(
-                    skusJson, userId, purchaseToken, identifier, payload
+                    skusJson, userId, purchaseToken, identifier, payload, packageName
                 ) ?: run {
                     throw ServiceNotInitializedException()
                 }
@@ -266,7 +269,8 @@ class PaymentConnection(
                             userId,
                             purchaseToken,
                             identifier,
-                            payload
+                            payload,
+                            packageName
                         ).apply {
                             putString(SKUS_ARG_KEY, skusJson)
                         }
@@ -288,7 +292,7 @@ class PaymentConnection(
         if (isServiceBound) {
             val skuDetailsBundle =
                 paymentServiceConnection?.iPaymentService?.purchaseProductViaNetbox(
-                    userId, purchaseToken, identifier, payload
+                    userId, purchaseToken, identifier, payload, packageName
                 ) ?: run {
                     throw ServiceNotInitializedException()
                 }
@@ -303,7 +307,8 @@ class PaymentConnection(
                             userId,
                             purchaseToken,
                             identifier,
-                            payload
+                            payload,
+                            packageName
                         )
                     )
                 }
@@ -318,12 +323,16 @@ class PaymentConnection(
         userId: String,
         purchaseToken: String,
         identifier: String,
-        payload: String
+        payload: String,
+        packageName: String = ""
     ) = Bundle().apply {
         putString(SOURCE_USER_ID_ARG_KEY, userId)
         putString(PURCHASE_TOKEN_ARG_KEY, purchaseToken)
         putString(IDENTIFIER_ARG_KEY, identifier)
         putString(PAYLOAD_ARG_KEY, payload)
+        if (packageName.isNotEmpty()) {
+            putString(PACKAGE_NAME_ARG_KEY, packageName)
+        }
     }
 
     private fun disconnect() {
