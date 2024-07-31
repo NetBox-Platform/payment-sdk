@@ -11,13 +11,15 @@ const val DISCOUNT = "discount"
 const val EXTRA = "extra"
 
 const val NETBOX_PAYMENT_RESULT = "netbox_payment_result"
+const val NETBOX_PAYMENT_CONNECTION_RESULT = "netbox_payment_connection_result"
 const val PACKAGE_NAME_ARG_KEY = "package_name"
 const val PRODUCT_ID_ARG_KEY = "product_id"
-const val CALLING_SOURCE_ARG_KEY = "calling_source"
 const val PURCHASE_TOKEN_ARG_KEY = "purchase_token"
-const val PURCHASE_STATUS_ARG_KEY = "purchase_status"
 const val PAYLOAD_ARG_KEY = "payload"
-const val USER_ID_ARG_KEY = "user_id"
+const val SOURCE_USER_ID_ARG_KEY = "user_id"
+const val IDENTIFIER_ARG_KEY = "identifier"
+const val SKUS_ARG_KEY = "skus"
+const val SOURCE_SKU_ARG_KEY = "source_sku"
 
 const val useBroadCastForPaymentCallbacks = true
 

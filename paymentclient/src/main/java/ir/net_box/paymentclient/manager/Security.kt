@@ -3,7 +3,6 @@ package ir.net_box.paymentclient.manager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
 import ir.net_box.paymentclient.BuildConfig
 import ir.net_box.paymentclient.manager.AppManager.NET_STORE_PACKAGE_NAME
 import java.io.ByteArrayInputStream

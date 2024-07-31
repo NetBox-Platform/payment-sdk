@@ -7,7 +7,7 @@ import android.net.Uri
 
 object AppManager {
 
-    val MINIMUM_STORE_VERSION = 330
+    const val MINIMUM_STORE_VERSION = 330
 
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {
         context.packageManager.getPackageInfo(packageName, flags)
@@ -18,11 +18,10 @@ object AppManager {
 
     fun isNetstoreInstalled(context: Context): Boolean =
         getPackageInfo(context, NET_STORE_PACKAGE_NAME) != null &&
-                Security.verifyNetstoreIsInstalled(context)
+            Security.verifyNetstoreIsInstalled(context)
 
     fun shouldUpdateNetstore(context: Context, minStoreVersionCode: Int) =
         getNetstoreVersion(context) < minStoreVersionCode
-
 
     fun updateNetstore(context: Context) {
         if (getPackageInfo(context, NET_STORE_PACKAGE_NAME) != null) {

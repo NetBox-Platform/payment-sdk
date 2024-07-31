@@ -1,17 +1,14 @@
 package ir.net_box.paymentclient.payment
 
+import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import androidx.core.content.ContextCompat
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
-import ir.net_box.paymentclient.util.NETBOX_PAYMENT_RESULT
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
 import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
@@ -23,9 +20,11 @@ import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
  */
 class Payment(private val context: Context, private val packageName: String) {
 
-    private val connection = PaymentConnection(context)
+    private val connection = PaymentConnection(context, packageName)
 
     private var resultBroadcastReceiver: ResultBroadcastReceiver? = null
+
+    private var isReceiverRegistered = false
 
     /**
      * Establishes a connection to the Netbox payment service.
@@ -35,10 +34,14 @@ class Payment(private val context: Context, private val packageName: String) {
      * @return A Connection interface that allows you to disconnect from the service or retrieve the current connection state
      */
     fun connect(callback: (ConnectionCallback) -> Unit): Connection {
-        return connection.startConnection(packageName, callback)
+        return connection.startConnection(callback)
     }
 
-    private fun handlePurchaseResult(purchaseProduct: Bundle, callback: (PurchaseCallback) -> Unit) {
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    private fun handlePurchaseResult(
+        purchaseProduct: Bundle,
+        callback: (PurchaseCallback) -> Unit
+    ) {
         val purchaseCallback = PurchaseCallback().apply(callback)
         when {
             purchaseProduct.isSucceed() -> {
@@ -50,7 +53,7 @@ class Payment(private val context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                if (useBroadCastForPaymentCallbacks) {
+                if (useBroadCastForPaymentCallbacks && !isReceiverRegistered) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
                         when {
                             intent.isSucceed() -> {
@@ -67,6 +70,7 @@ class Payment(private val context: Context, private val packageName: String) {
                         resultBroadcastReceiver,
                         IntentFilter(PAYMENT_BROADCAST_ACTION)
                     )
+                    isReceiverRegistered = true
                 } else {
                     purchaseCallback.purchaseFailed?.invoke(
                         Throwable("Purchase result is unknown!"), purchaseProduct
@@ -80,14 +84,16 @@ class Payment(private val context: Context, private val packageName: String) {
         val result: (Intent) -> Unit
     ) : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.d("ResultBroadcastReceiver", "onReceive: " + intent?.getIntExtra(NETBOX_PAYMENT_RESULT, -100))
             if (intent != null) {
                 result(intent)
             }
-            try {
+            runCatching {
                 context?.unregisterReceiver(resultBroadcastReceiver)
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }.onSuccess {
+                isReceiverRegistered = false
+            }.onFailure {
+                it.printStackTrace()
+                isReceiverRegistered = false
             }
         }
     }
@@ -110,7 +116,8 @@ class Payment(private val context: Context, private val packageName: String) {
         payload: String,
         callback: (PurchaseCallback) -> Unit
     ) {
-        val purchaseProduct = connection.purchaseProductBySku(sourceSku, userId, purchaseToken, identifier, payload)
+        val purchaseProduct =
+            connection.purchaseProductBySku(sourceSku, userId, purchaseToken, identifier, payload)
         handlePurchaseResult(purchaseProduct, callback)
     }
 
@@ -185,5 +192,6 @@ class Payment(private val context: Context, private val packageName: String) {
 
     companion object {
         const val PAYMENT_BROADCAST_ACTION = "ir.net_box.payment.Broadcast"
+        const val PAYMENT_INTENT_BROADCAST_ACTION = "ir.net_box.payment.intent.Broadcast"
     }
 }
