@@ -111,7 +111,7 @@ class PaymentConnection(
         if (connectionBroadcastReceiver == null) {
             connectionBroadcastReceiver = ConnectionBroadcastReceiver { errorCode ->
                 if (errorCode == ErrorType.NO_ERROR.code) {
-                    callback?.connectionSucceed?.invoke()
+                    this.callback?.connectionSucceed?.invoke()
                 } else {
                     val errorType = ErrorType.values().find {
                         it.code == errorCode
