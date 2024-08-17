@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
          */
         if (!AppManager.isNetstoreInstalled(applicationContext)) {
             // Netstore is not installed, so you can not use the netbox payment service
+            return
         }
 
         /**
@@ -38,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         if (AppManager.shouldUpdateNetstore(this, AppManager.MINIMUM_STORE_VERSION)) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
+            return
         }
 
         // Initialize the payment client with the application context and your package name
