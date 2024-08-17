@@ -98,12 +98,13 @@ class PaymentConnection(
 
     private fun startConnectionViaIntent() {
         shouldUseIntent = true
-        context.startActivity(
+        context.tryStartActivity(
             getPaymentIntent().apply {
                 putExtra(CONNECTION_START, true)
             }
-        )
-        registerConnectionBroadCastIfNeeded()
+        ) {
+            registerConnectionBroadCastIfNeeded()
+        }
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
@@ -182,7 +183,7 @@ class PaymentConnection(
                 }
             return purchaseProductBundle
         } else if (shouldUseIntent) {
-            context.startActivity(
+            context.tryStartActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 1)
                     putExtra(
@@ -221,7 +222,7 @@ class PaymentConnection(
                 }
             return skuDetailsBundle
         } else if (shouldUseIntent) {
-            context.startActivity(
+            context.tryStartActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 3)
                     putExtra(
@@ -260,7 +261,7 @@ class PaymentConnection(
                 }
             return skuDetailsBundle
         } else if (shouldUseIntent) {
-            context.startActivity(
+            context.tryStartActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 4)
                     putExtra(
@@ -298,7 +299,7 @@ class PaymentConnection(
                 }
             return skuDetailsBundle
         } else if (shouldUseIntent) {
-            context.startActivity(
+            context.tryStartActivity(
                 getPaymentIntent().apply {
                     putExtra(PAYMENT_TYPE, 2)
                     putExtra(
