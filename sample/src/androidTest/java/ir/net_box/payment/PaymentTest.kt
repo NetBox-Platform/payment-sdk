@@ -20,7 +20,8 @@ import java.util.concurrent.TimeUnit
 @SmallTest
 class PaymentTest {
 
-    private val paymentConnection = PaymentConnection(ApplicationProvider.getApplicationContext())
+    private val paymentConnection = PaymentConnection(ApplicationProvider.getApplicationContext(),
+        ApplicationProvider.getApplicationContext<Context>().packageName)
 
     private lateinit var connection: Connection
 
@@ -57,7 +58,7 @@ class PaymentTest {
     }
 
     private fun connect(connectionLatch: CountDownLatch): Connection {
-        return paymentConnection.startConnection(ApplicationProvider.getApplicationContext<Context>().packageName) { connectionCallback ->
+        return paymentConnection.startConnection { connectionCallback ->
                 // This lambda is where you can customize the behavior of the ConnectionCallback
                 connectionCallback.connectionSucceed {
                     // You can add specific behavior for the successful connection if needed
