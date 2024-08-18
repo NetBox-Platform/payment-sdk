@@ -134,6 +134,7 @@ Step 2. Add the dependency
          */
         if (!AppManager.isNetstoreInstalled(applicationContext)) {
             // Netstore is not installed yet, so you can not use the netbox payment service
+	    return
         }
 
         /** 
@@ -142,4 +143,5 @@ Step 2. Add the dependency
         if (AppManager.shouldUpdateNetstore(this, AppManager.MINIMUM_STORE_VERSION)) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
+	    return
         }    
