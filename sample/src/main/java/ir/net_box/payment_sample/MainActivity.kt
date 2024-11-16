@@ -181,6 +181,65 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
+
+            purchaseWithPricingButton.setOnClickListener {
+                /**
+                 * Create a purchase with a known product ID and receive results in a callback.
+                 * In this case, you should display and allow the user to select a subscription plan in your app,
+                 * then send your sku (e.g., "plan-3-months") and item price(including VAT) and discount.
+                 */
+                if (connection?.getConnectionState() == ConnectionState.Connected) {
+                    payment.purchaseProductWithPricing(
+                        sourceSku = "plan-3-months",
+                        userId = "YOUR_UNIQUE_USER_ID",
+                        purchaseToken = "YOUR_PURCHASE_TOKEN",
+                        identifier = "09123456789",
+                        payload = "PAYLOAD_123",
+                        price = 220000, // Price in Toman
+                        discount = 30000 // Discount in Toman
+                    ) {
+                        it.purchaseSucceed {
+                            Log.d(TAG, "purchaseSucceed")
+                            if (it.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
+                                // Valid result
+                                Toast.makeText(this@MainActivity, "پرداخت موفق", Toast.LENGTH_LONG)
+                                    .show()
+                                Log.d(TAG, "purchaseSucceed" + it.toReadableString())
+                            }
+                        }
+
+                        it.purchaseFailed { throwable, bundle ->
+                            Log.d(TAG, "purchaseFailed: " + throwable.message)
+
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> purchaseToken: " + bundle.getString(
+                                    PURCHASE_TOKEN_ARG_KEY
+                                )
+                            )
+
+                            if (bundle.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
+                                // Valid result
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "عملیات ناموفق",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                Log.d(TAG, "purchaseFailed: " + bundle.toReadableString())
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

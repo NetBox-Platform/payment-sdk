@@ -20,6 +20,8 @@ const val SOURCE_USER_ID_ARG_KEY = "user_id"
 const val IDENTIFIER_ARG_KEY = "identifier"
 const val SKUS_ARG_KEY = "skus"
 const val SOURCE_SKU_ARG_KEY = "source_sku"
+const val PRICE_ARG_KEY = "price"
+const val DISCOUNT_ARG_KEY = "discount"
 
 const val useBroadCastForPaymentCallbacks = true
 

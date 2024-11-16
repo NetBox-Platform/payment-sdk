@@ -14,5 +14,7 @@ interface IPaymentService {
 
     Bundle purchaseProductBySku(String sourceSku, String userId, String purchaseToken, String identifier, String payload, String packageName);
 
+    Bundle purchaseProductWithPricing(String sourceSku, String userId, String purchaseToken, String identifier, String payload, String packageName, int price, int discount);
+
     void stopConnection();
 }

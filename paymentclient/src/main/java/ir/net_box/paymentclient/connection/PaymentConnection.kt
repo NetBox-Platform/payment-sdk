@@ -206,6 +206,56 @@ class PaymentConnection(
         }
     }
 
+    override fun purchaseProductWithPricing(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String,
+        payload: String,
+        price: Int,
+        discount: Int
+    ): Bundle {
+        if (isServiceBound) {
+            val purchaseProductBundle =
+                paymentServiceConnection?.iPaymentService?.purchaseProductWithPricing(
+                    sourceSku,
+                    userId,
+                    purchaseToken,
+                    identifier,
+                    payload,
+                    packageName,
+                    price,
+                    discount
+                ) ?: run {
+                    throw ServiceNotInitializedException()
+                }
+            return purchaseProductBundle
+        } else if (shouldUseIntent) {
+            context.tryStartActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 5)
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload,
+                            packageName,
+                        ).apply {
+                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                            putInt(PRICE_ARG_KEY, price)
+                            putInt(DISCOUNT_ARG_KEY, discount)
+                        }
+                    )
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
+        } else {
+            throw ServiceNotInitializedException()
+        }
+    }
+
     override fun sendSkuDetails(
         skusBundle: List<Bundle>,
         userId: String,

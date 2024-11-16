@@ -34,4 +34,15 @@ interface Payable {
         identifier: String,
         payload: String
     ): Bundle
+
+    fun purchaseProductWithPricing(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String,
+        payload: String,
+        price: Int,
+        discount: Int
+    ): Bundle
+
 }
