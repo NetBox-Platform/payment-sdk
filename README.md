@@ -85,8 +85,8 @@ Step 2. Add the dependency
      * @param callback Callback to receive the results of the purchase operation
      
     payment.purchaseProductBySku(
-	sourceSku = "test-sku",
-	userId = "YOUR_UNIQUE_USER_ID",
+	    sourceSku = "test-sku",
+	    userId = "YOUR_UNIQUE_USER_ID",
         purchaseToken = "YOUR_PURCHASE_TOKEN",
         payload = "PAYLOAD_123"
     ) { purchaseCallback ->
@@ -98,6 +98,32 @@ Step 2. Add the dependency
         }
     }
 
+### Purchase a product with pricing
+     * @param sourceSku The SKU to be purchased
+     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
+     * @param purchaseToken The unique token associated with this purchase request
+     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email (Optional)
+     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
+     * @param price The total item price in Toman, including VAT
+     * @param discount The discount amount applied for this user in Toman
+     * @param callback Callback to receive the results of the purchase operation
+     
+	payment.purchaseProductWithPricing(
+		sourceSku = "plan-3-months",
+		userId = "YOUR_UNIQUE_USER_ID",
+		purchaseToken = "YOUR_PURCHASE_TOKEN",
+		identifier = "09123456789",
+		payload = "PAYLOAD_123",
+		price = 220000, // Price in Toman
+		discount = 30000 // Discount in Toman
+		) { purchaseCallback ->
+			purchaseCallback.purchaseSucceed { bundle ->
+			    // Handle successful purchase
+			}
+			purchaseCallback.purchaseFailed { throwable, bundle ->
+			    // Handle failed purchase
+			}
+		}
 ### Via Netbox
 
       // Initiates a call to the Netbox payment service to display and handle your SKUs.
