@@ -28,6 +28,11 @@ fun Bundle.isSucceed() =
         NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode
     ) == ServiceResultStatus.SUCCEED.statusCode
 
+fun Bundle.isAlreadySucceeded() =
+    getInt(
+        NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.ALREADY_SUCCEEDED.statusCode
+
 fun Bundle.isFailed() =
     getInt(
         NETBOX_PAYMENT_RESULT,
@@ -39,6 +44,11 @@ fun Intent.isSucceed() =
         NETBOX_PAYMENT_RESULT,
         ServiceResultStatus.UNKNOWN.statusCode
     ) == ServiceResultStatus.SUCCEED.statusCode
+
+fun Intent.isAlreadySucceeded() =
+    getIntExtra(
+        NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode
+    ) == ServiceResultStatus.ALREADY_SUCCEEDED.statusCode
 
 fun Intent.isFailed() =
     getIntExtra(

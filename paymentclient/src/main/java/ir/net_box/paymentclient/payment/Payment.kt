@@ -9,6 +9,7 @@ import android.os.Bundle
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
+import ir.net_box.paymentclient.util.isAlreadySucceeded
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
 import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
@@ -47,6 +48,9 @@ class Payment(private val context: Context, private val packageName: String) {
             purchaseProduct.isSucceed() -> {
                 purchaseCallback.purchaseSucceed?.let { it(purchaseProduct) }
             }
+            purchaseProduct.isAlreadySucceeded() -> {
+                purchaseCallback.purchaseIsAlreadySucceeded?.let { it(purchaseProduct) }
+            }
             purchaseProduct.isFailed() -> {
                 purchaseCallback.purchaseFailed?.invoke(
                     Throwable("Purchase is failed!"), purchaseProduct
@@ -58,6 +62,9 @@ class Payment(private val context: Context, private val packageName: String) {
                         when {
                             intent.isSucceed() -> {
                                 purchaseCallback.purchaseSucceed?.let { it(purchaseProduct) }
+                            }
+                            intent.isAlreadySucceeded() -> {
+                                purchaseCallback.purchaseIsAlreadySucceeded?.let { it(purchaseProduct) }
                             }
                             intent.isFailed() -> {
                                 purchaseCallback.purchaseFailed?.invoke(
