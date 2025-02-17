@@ -93,6 +93,9 @@ Step 2. Add the dependency
         purchaseCallback.purchaseSucceed { bundle ->
             // Handle successful purchase
         }
+	purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+	    // Handle already succeeded purchase
+	}
         purchaseCallback.purchaseFailed { throwable, bundle ->
             // Handle failed purchase
         }
@@ -119,6 +122,9 @@ Step 2. Add the dependency
 		) { purchaseCallback ->
 			purchaseCallback.purchaseSucceed { bundle ->
 			    // Handle successful purchase
+			}
+		   	purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+			    // Handle already succeeded purchase
 			}
 			purchaseCallback.purchaseFailed { throwable, bundle ->
 			    // Handle failed purchase
