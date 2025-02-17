@@ -90,15 +90,15 @@ Step 2. Add the dependency
         purchaseToken = "YOUR_PURCHASE_TOKEN",
         payload = "PAYLOAD_123"
     ) { purchaseCallback ->
-        purchaseCallback.purchaseSucceed { bundle ->
-            // Handle successful purchase
-        }
-	purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
-	    // Handle already succeeded purchase
-	}
-        purchaseCallback.purchaseFailed { throwable, bundle ->
-            // Handle failed purchase
-        }
+		purchaseCallback.purchaseSucceed { bundle ->
+		    // Handle successful purchase
+		}
+		purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+		    // Handle already succeeded purchase
+		}
+		purchaseCallback.purchaseFailed { throwable, bundle ->
+		    // Handle failed purchase
+		}
     }
 
 ### Purchase a product with pricing
