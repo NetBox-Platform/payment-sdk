@@ -10,6 +10,7 @@ import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
 import ir.net_box.paymentclient.util.isAlreadySucceeded
+import ir.net_box.paymentclient.util.isAndroid13OrHigher
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
 import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
@@ -73,10 +74,18 @@ class Payment(private val context: Context, private val packageName: String) {
                             }
                         }
                     }
-                    context.registerReceiver(
-                        resultBroadcastReceiver,
-                        IntentFilter(PAYMENT_BROADCAST_ACTION)
-                    )
+                    if (isAndroid13OrHigher) {
+                        context.registerReceiver(
+                            resultBroadcastReceiver,
+                            IntentFilter(PAYMENT_BROADCAST_ACTION),
+                            Context.RECEIVER_EXPORTED
+                        )
+                    } else {
+                        context.registerReceiver(
+                            resultBroadcastReceiver,
+                            IntentFilter(PAYMENT_BROADCAST_ACTION)
+                        )
+                    }
                     isReceiverRegistered = true
                 } else {
                     purchaseCallback.purchaseFailed?.invoke(
