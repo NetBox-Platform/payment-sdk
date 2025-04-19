@@ -52,6 +52,11 @@ class PaymentConnection(
                 // onServiceConnected
                 verified ->
                 if (verified && !shouldUseIntent) {
+                    val flags =
+                        if (isAndroid14OrHigher)
+                            Context.BIND_AUTO_CREATE or Context.BIND_ALLOW_ACTIVITY_STARTS
+                        else
+                            Context.BIND_AUTO_CREATE
                     try {
                         // Second try to connect to netbox payment system
                         context.bindService(
@@ -60,7 +65,7 @@ class PaymentConnection(
                                 setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_CLASS_NAME)
                                 putExtra(PACKAGE_NAME_ARG_KEY, packageName)
                             },
-                            paymentServiceConnection!!, Context.BIND_AUTO_CREATE
+                            paymentServiceConnection!!, flags
                         )
                     } catch (e: SecurityException) {
                         this.callback?.connectionFailed?.invoke(e)
@@ -78,26 +83,22 @@ class PaymentConnection(
 
         // First we verify your app validation
         try {
-            if (isAndroid13OrHigher) {
-                // On Android 13+ (API 33+), background activity starts are restricted.
-                // So we skip binding to the service and directly attempt starting the activity
-                // (handled internally with notification fallback if in background).
+            val flags =
+                if (isAndroid14OrHigher)
+                    Context.BIND_AUTO_CREATE or Context.BIND_ALLOW_ACTIVITY_STARTS
+                else
+                    Context.BIND_AUTO_CREATE
+
+            val bindService = context.bindService(
+                Intent(PAYMENT_SERVICE_ACTION).apply {
+                    `package` = NET_STORE_PACKAGE_NAME
+                    setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_VERIFICATION_CLASS_NAME)
+                    putExtra(PACKAGE_NAME_ARG_KEY, packageName)
+                },
+                verificationServiceConnection!!.mConnection, flags
+            )
+            if (!bindService) {
                 startConnectionViaIntent()
-            } else {
-                // On older Android versions, try to bind to the verification service first.
-                // If the bind fails, fallback to starting the activity manually.
-                val bindService = context.bindService(
-                    Intent(PAYMENT_SERVICE_ACTION).apply {
-                        `package` = NET_STORE_PACKAGE_NAME
-                        setClassName(NET_STORE_PACKAGE_NAME, PAYMENT_SERVICE_VERIFICATION_CLASS_NAME)
-                        putExtra(PACKAGE_NAME_ARG_KEY, packageName)
-                    },
-                    verificationServiceConnection!!.mConnection, Context.BIND_AUTO_CREATE
-                )
-                if (!bindService) {
-                    // If binding fails, fallback to manual intent launch.
-                    startConnectionViaIntent()
-                }
             }
         } catch (e: SecurityException) {
             // If there's a security exception (e.g., service binding not permitted),
