@@ -449,6 +449,8 @@ class PaymentConnection(
         }
 
         connectionBroadcastReceiver = null
+
+        verificationServiceConnection?.clear()
     }
 
     private fun getPaymentIntent() =

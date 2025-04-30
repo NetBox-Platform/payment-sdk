@@ -57,4 +57,8 @@ internal class PaymentConnectionVerification(
             false
         }
     }
+
+    fun clear() {
+        mService = null
+    }
 }
