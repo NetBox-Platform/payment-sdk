@@ -23,8 +23,6 @@ const val SOURCE_SKU_ARG_KEY = "source_sku"
 const val PRICE_ARG_KEY = "price"
 const val DISCOUNT_ARG_KEY = "discount"
 
-const val useBroadCastForPaymentCallbacks = true
-
 fun Bundle.isSucceed() =
     getInt(
         NETBOX_PAYMENT_RESULT, ServiceResultStatus.UNKNOWN.statusCode

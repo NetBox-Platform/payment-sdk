@@ -15,7 +15,7 @@ internal class PaymentConnectionVerification(
     private val onServiceDisconnected: () -> Unit
 ) {
 
-    /** Messenger for communicating with the service.  */
+    /** Messenger for communicating with the service. */
     var mService: Messenger? = null
 
     /**

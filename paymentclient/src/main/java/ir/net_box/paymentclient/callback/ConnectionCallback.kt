@@ -23,7 +23,6 @@ class ConnectionCallback(private val disconnect: () -> Unit) : Connection {
     fun connectionFailed(block: (throwable: Throwable) -> Unit) {
         connectionFailed = {
             connectionState = ConnectionState.FailedToConnect
-            // TODO
             block(it)
         }
     }

@@ -13,7 +13,6 @@ import ir.net_box.paymentclient.util.isAlreadySucceeded
 import ir.net_box.paymentclient.util.isAndroid13OrHigher
 import ir.net_box.paymentclient.util.isFailed
 import ir.net_box.paymentclient.util.isSucceed
-import ir.net_box.paymentclient.util.useBroadCastForPaymentCallbacks
 
 /**
  * @param context The application context
@@ -58,7 +57,7 @@ class Payment(private val context: Context, private val packageName: String) {
                 )
             }
             else -> {
-                if (useBroadCastForPaymentCallbacks && !isReceiverRegistered) {
+                if (!isReceiverRegistered) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
                         when {
                             intent.isSucceed() -> {
