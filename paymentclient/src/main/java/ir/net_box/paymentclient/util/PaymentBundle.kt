@@ -22,6 +22,11 @@ const val SKUS_ARG_KEY = "skus"
 const val SOURCE_SKU_ARG_KEY = "source_sku"
 const val PRICE_ARG_KEY = "price"
 const val DISCOUNT_ARG_KEY = "discount"
+const val PRODUCT_TYPE_ARG_KEY = "product_type"
+const val TITLE_FA_ARG_KEY = "title_fa"
+const val TITLE_EN_ARG_KEY = "title_en"
+const val TITLE_AR_ARG_KEY = "title_ar"
+const val TITLE_TR_ARG_KEY = "title_tr"
 
 fun Bundle.isSucceed() =
     getInt(

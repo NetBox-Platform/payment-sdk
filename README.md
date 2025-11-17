@@ -101,7 +101,7 @@ Step 2. Add the dependency
 		}
     }
 
-### Purchase a product with pricing
+### Purchase a product with pricing (Deprecated: Use purchaseProduct instead)
      * @param sourceSku The SKU to be purchased
      * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
      * @param purchaseToken The unique token associated with this purchase request
@@ -130,6 +130,51 @@ Step 2. Add the dependency
 			    // Handle failed purchase
 			}
 		}
+
+### Purchase a product
+    * Purchase a product with pricing and multilanguage titles.
+      *
+      * Use this function to initiate a purchase for either a subscription or a pay‑per‑view product.
+      * The SDK displays localized product information and returns the result through callbacks.
+      *
+      * @param sourceSku The SKU of the product to be purchased.
+      * @param userId The unique User ID associated with the purchase to sync user‑specific data with your predefined APIs. (We will call your APIs, if defined, with this user ID.)
+      * @param purchaseToken The unique token generated for this purchase request.
+      * @param identifier An identifier string shown in the purchase UI (e.g., masked phone number or email). *(Optional)*
+      * @param payload A random string used to identify this request. Returned in the result bundle with key `"payload"`.
+      * @param price The total item price in Toman, including VAT.
+      * @param discount The discount amount applied for this user, in Toman.
+      * @param productType The product type — either [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW].
+      * @param titleFa The product title in Persian (required).
+      * @param titleEn The product title in English. *(Optional but strongly recommended for multi‑language support)*
+      * @param titleAr The product title in Arabic. *(Optional but strongly recommended for multi‑language support)*
+      * @param titleTr The product title in Turkish. *(Optional but strongly recommended for multi‑language support)*
+      * @param callback Callback to receive the purchase result.
+         
+      payment.purchaseProduct(
+          sourceSku = "the_jackal_s01e01_sku", 
+          userId = "YOUR_UNIQUE_USER_ID",
+          purchaseToken = "YOUR_PURCHASE_TOKEN",
+          identifier = "09123456789",
+          payload = "PAYLOAD_123",
+          price = 220000, // Price in Toman
+          discount = 30000 // Discount in Toman,
+          productType = ProductType.SUBSCRIPTION, // or ProductType.PAY_PER_VIEW,
+          titleFa = "شغال - قسمت اول فصل اول",
+          titleEn = "The Jackal - Season 1 Episode 1",
+          titleAr = "ابن آوى – الحلقة الأولى من الموسم الأول",
+          titleTr = "Çakal – 1.Sezon 1.Bölüm"
+          ) { purchaseCallback ->
+              purchaseCallback.purchaseSucceed { bundle ->
+                  // Handle successful purchase
+              }
+                 purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+                  // Handle already succeeded purchase
+              }
+              purchaseCallback.purchaseFailed { throwable, bundle ->
+                  // Handle failed purchase
+              }
+          }
 ### Via Netbox
 
       // Initiates a call to the Netbox payment service to display and handle your SKUs.
@@ -172,7 +217,7 @@ Step 2. Add the dependency
         /** 
          * You can check for updates to the netstore that supports the payment service
          */
-        if (AppManager.shouldUpdateNetstore(this, AppManager.MINIMUM_STORE_VERSION)) {
+        if (AppManager.shouldUpdateNetstore(this)) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
 	    return

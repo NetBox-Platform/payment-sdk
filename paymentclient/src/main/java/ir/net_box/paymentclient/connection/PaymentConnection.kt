@@ -13,6 +13,7 @@ import ir.net_box.paymentclient.exception.ServiceNotInitializedException
 import ir.net_box.paymentclient.manager.AppManager.NET_STORE_PACKAGE_NAME
 import ir.net_box.paymentclient.payment.Payment.Companion.PAYMENT_INTENT_BROADCAST_ACTION
 import ir.net_box.paymentclient.payment.PaymentServiceConnection
+import ir.net_box.paymentclient.payment.ProductType
 import ir.net_box.paymentclient.util.*
 
 class PaymentConnection(
@@ -267,6 +268,71 @@ class PaymentConnection(
                             putString(SOURCE_SKU_ARG_KEY, sourceSku)
                             putInt(PRICE_ARG_KEY, price)
                             putInt(DISCOUNT_ARG_KEY, discount)
+                        }
+                    )
+                }
+            )
+            return getResultBundle(userId, purchaseToken, identifier, payload)
+        } else {
+            throw ServiceNotInitializedException()
+        }
+    }
+
+    override fun purchaseProduct(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String,
+        payload: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String,
+        titleAr: String,
+        titleTr: String
+    ): Bundle {
+        if (isServiceBound) {
+            val purchaseProductBundle =
+                paymentServiceConnection?.iPaymentService?.purchaseProduct(
+                    sourceSku,
+                    userId,
+                    purchaseToken,
+                    identifier,
+                    payload,
+                    packageName,
+                    price,
+                    discount,
+                    productType.value,
+                    titleFa,
+                    titleEn,
+                    titleAr,
+                    titleTr
+                ) ?: run {
+                    throw ServiceNotInitializedException()
+                }
+            return purchaseProductBundle
+        } else if (shouldUseIntent) {
+            context.tryStartActivity(
+                getPaymentIntent().apply {
+                    putExtra(PAYMENT_TYPE, 6)
+                    putExtra(
+                        PAYMENT_BUNDLE_ARGS,
+                        getResultBundle(
+                            userId,
+                            purchaseToken,
+                            identifier,
+                            payload,
+                            packageName,
+                        ).apply {
+                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                            putInt(PRICE_ARG_KEY, price)
+                            putInt(DISCOUNT_ARG_KEY, discount)
+                            putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
+                            putString(TITLE_FA_ARG_KEY, titleFa)
+                            putString(TITLE_EN_ARG_KEY, titleEn)
+                            putString(TITLE_AR_ARG_KEY, titleAr)
+                            putString(TITLE_TR_ARG_KEY, titleTr)
                         }
                     )
                 }

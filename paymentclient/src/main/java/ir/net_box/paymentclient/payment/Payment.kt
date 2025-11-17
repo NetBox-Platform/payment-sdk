@@ -64,7 +64,11 @@ class Payment(private val context: Context, private val packageName: String) {
                                 purchaseCallback.purchaseSucceed?.let { it(purchaseProduct) }
                             }
                             intent.isAlreadySucceeded() -> {
-                                purchaseCallback.purchaseIsAlreadySucceeded?.let { it(purchaseProduct) }
+                                purchaseCallback.purchaseIsAlreadySucceeded?.let {
+                                    it(
+                                        purchaseProduct
+                                    )
+                                }
                             }
                             intent.isFailed() -> {
                                 purchaseCallback.purchaseFailed?.invoke(
@@ -148,6 +152,13 @@ class Payment(private val context: Context, private val packageName: String) {
      * @param discount The discount amount applied for this user in Toman
      * @param callback Callback to receive the results of the purchase operation
      */
+    @Deprecated(
+        message = "Use purchaseProduct() instead. The new version supports productType and localized titles.",
+        replaceWith = ReplaceWith(
+            expression = "purchaseProduct(sourceSku, userId, purchaseToken, identifier, payload, price, discount, productType, titleFa, titleEn, titleAr, titleTr, callback)",
+            imports = ["ir.net_box.store.sdk.ProductType"]
+        )
+    )
     fun purchaseProductWithPricing(
         sourceSku: String,
         userId: String,
@@ -159,7 +170,77 @@ class Payment(private val context: Context, private val packageName: String) {
         callback: (PurchaseCallback) -> Unit
     ) {
         val purchaseProduct =
-            connection.purchaseProductWithPricing(sourceSku, userId, purchaseToken, identifier, payload, price, discount)
+            connection.purchaseProductWithPricing(
+                sourceSku,
+                userId,
+                purchaseToken,
+                identifier,
+                payload,
+                price,
+                discount
+            )
+        handlePurchaseResult(purchaseProduct, callback)
+    }
+
+    /**
+     * Creates a purchase with explicit pricing and localized product metadata.
+     *
+     * This method supports both subscription and pay‑per‑view product types.
+     * After a successful purchase transaction, the SDK automatically triggers the
+     * verification API using the provided purchase token.
+     *
+     * @param sourceSku The unique SKU of the product to be purchased.
+     * @param userId The unique user identifier associated with this purchase.
+     * Used to synchronize user‑specific purchase data with your backend APIs.
+     * (Your pre‑defined APIs will be called with this `userId` if configured.)
+     * @param purchaseToken The unique token representing this purchase request.
+     * @param identifier An optional identifier shown on the purchase page/UI —
+     * for example, a masked phone number or email address.
+     * @param payload A random client‑generated string used for request correlation.
+     * It will be returned in the result bundle under the key `"payload"`.
+     * @param price The total product price in **Toman**, inclusive of VAT.
+     * @param discount The discount amount applied for this user, in **Toman**.
+     * @param productType The product type: [ProductType.SUBSCRIPTION] for recurring
+     * billing products or [ProductType.PAY_PER_VIEW] for one‑time access items.
+     * @param titleFa The product title in **Persian (Farsi)** — *this parameter is required*
+     * and used for displaying localized purchase information in the checkout UI.
+     * @param titleEn The product title in **English** — optional but **strongly recommended**
+     * to enhance internationalized UI and cross‑language presentation.
+     * @param titleAr The product title in **Arabic** — optional, recommended for Arabic localizations.
+     * @param titleTr The product title in **Turkish** — optional, recommended for Turkish users.
+     * @param callback Callback invoked upon completion of the purchase operation,
+     * returning a [PurchaseCallback] indicating success, cancellation, or failure.
+     */
+    fun purchaseProduct(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String = "",
+        payload: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String = "",
+        titleAr: String = "",
+        titleTr: String = "",
+        callback: (PurchaseCallback) -> Unit
+    ) {
+        val purchaseProduct =
+            connection.purchaseProduct(
+                sourceSku,
+                userId,
+                purchaseToken,
+                identifier,
+                payload,
+                price,
+                discount,
+                productType,
+                titleFa,
+                titleEn,
+                titleAr,
+                titleTr
+            )
         handlePurchaseResult(purchaseProduct, callback)
     }
 

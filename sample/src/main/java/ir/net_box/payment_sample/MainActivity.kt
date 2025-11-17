@@ -9,6 +9,7 @@ import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.ConnectionState
 import ir.net_box.paymentclient.manager.AppManager
 import ir.net_box.paymentclient.payment.Payment
+import ir.net_box.paymentclient.payment.ProductType
 import ir.net_box.paymentclient.util.PAYLOAD_ARG_KEY
 import ir.net_box.paymentclient.util.PRODUCT_ID_ARG_KEY
 import ir.net_box.paymentclient.util.PURCHASE_TOKEN_ARG_KEY
@@ -185,19 +186,94 @@ class MainActivity : AppCompatActivity() {
 
             purchaseWithPricingButton.setOnClickListener {
                 /**
-                 * Create a purchase with a known product ID and receive results in a callback.
-                 * In this case, you should display and allow the user to select a subscription plan in your app,
-                 * then send your sku (e.g., "plan-3-months") and item price(including VAT) and discount.
+                 * Create a purchase for a specific product and receive the result through a callback.
+                 * For Pay‑Per‑View or subscriptions, display available plans in your UI,
+                 * then pass the selected SKU, item price (including VAT), and discount values.
                  */
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
-                    payment.purchaseProductWithPricing(
+                    payment.purchaseProduct(
                         sourceSku = "plan-3-months",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123",
                         price = 220000, // Price in Toman
-                        discount = 30000 // Discount in Toman
+                        discount = 30000, // Discount in Toman
+                        productType = ProductType.SUBSCRIPTION,
+                        titleFa = "اشتراک سه ماهه",
+                        titleEn = "Three‑month subscription",
+                        titleAr = "اشتراك لمدة ثلاثة أشهر",
+                        titleTr = "Üç aylık abonelik"
+                    ) {
+                        it.purchaseSucceed {
+                            Log.d(TAG, "purchaseSucceed")
+                            if (it.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
+                                // Valid result
+                                Toast.makeText(this@MainActivity, "پرداخت موفق", Toast.LENGTH_LONG)
+                                    .show()
+                                Log.d(TAG, "purchaseSucceed" + it.toReadableString())
+                            }
+                        }
+
+                        it.purchaseFailed { throwable, bundle ->
+                            Log.d(TAG, "purchaseFailed: " + throwable.message)
+
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> productId: " + bundle.getInt(PRODUCT_ID_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> payload: " + bundle.getString(PAYLOAD_ARG_KEY)
+                            )
+                            Log.d(
+                                TAG,
+                                "purchaseFailed -> purchaseToken: " + bundle.getString(
+                                    PURCHASE_TOKEN_ARG_KEY
+                                )
+                            )
+
+                            if (bundle.getString(PAYLOAD_ARG_KEY) == "PAYLOAD_123") {
+                                // Valid result
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "عملیات ناموفق",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                Log.d(TAG, "purchaseFailed: " + bundle.toReadableString())
+                            }
+                        }
+                    }
+                }
+            }
+
+            purchasePayPerViewButton.setOnClickListener {
+                /**
+                 * Performs a Pay‑Per‑View purchase for a specific product.
+                 *
+                 * This example shows how to call [purchaseProduct] when the
+                 * connection is established and handle both success and failure results.
+                 *
+                 * - **Price & Discount:** in Toman.
+                 * - **Product Type:** [ProductType.PAY_PER_VIEW]
+                 * - **Required:** `titleFa`
+                 * - **Optional but strongly recommended:** `titleEn`, `titleAr`, `titleTr` (for showing product titles in the appropriate language based on app locale)
+                 */
+                if (connection?.getConnectionState() == ConnectionState.Connected) {
+                    payment.purchaseProduct(
+                        sourceSku = "the_jackal_s01e01_sku",
+                        userId = "YOUR_UNIQUE_USER_ID",
+                        purchaseToken = "YOUR_PURCHASE_TOKEN",
+                        identifier = "09123456789",
+                        payload = "PAYLOAD_123",
+                        price = 30000, // Price in Toman (including VAT)
+                        discount = 5000, // Discount in Toman
+                        productType = ProductType.PAY_PER_VIEW,
+                        titleFa = "شغال - قسمت اول فصل اول",
+                        titleEn = "The Jackal - Season 1 Episode 1",
+                        titleAr = "ابن آوى – الحلقة الأولى من الموسم الأول",
+                        titleTr = "Çakal – 1.Sezon 1.Bölüm"
                     ) {
                         it.purchaseSucceed {
                             Log.d(TAG, "purchaseSucceed")

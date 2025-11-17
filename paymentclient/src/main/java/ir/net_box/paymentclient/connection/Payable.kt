@@ -1,6 +1,7 @@
 package ir.net_box.paymentclient.connection
 
 import android.os.Bundle
+import ir.net_box.paymentclient.payment.ProductType
 
 interface Payable {
 
@@ -45,4 +46,18 @@ interface Payable {
         discount: Int
     ): Bundle
 
+    fun purchaseProduct(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String = "",
+        payload: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String = "",
+        titleAr: String = "",
+        titleTr: String = ""
+    ): Bundle
 }

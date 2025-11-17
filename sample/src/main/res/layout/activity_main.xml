@@ -49,6 +49,14 @@
             android:textAllCaps="false"
             android:text="Purchase with pricing" />
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/purchase_pay_per_view_button"
+            android:textAllCaps="false"
+            android:text="Purchase Pay Per View item" />
+
     </LinearLayout>
 
     <LinearLayout
