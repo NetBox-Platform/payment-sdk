@@ -159,7 +159,7 @@ Step 2. Add the dependency
           payload = "PAYLOAD_123",
           price = 220000, // Price in Toman
           discount = 30000 // Discount in Toman,
-          productType = ProductType.SUBSCRIPTION, // or ProductType.PAY_PER_VIEW,
+          productType = ProductType.PAY_PER_VIEW, // or ProductType.SUBSCRIPTION,
           titleFa = "شغال - قسمت اول فصل اول",
           titleEn = "The Jackal - Season 1 Episode 1",
           titleAr = "ابن آوى – الحلقة الأولى من الموسم الأول",
