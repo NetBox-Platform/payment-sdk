@@ -20,7 +20,7 @@ object AppManager {
         getPackageInfo(context, NET_STORE_PACKAGE_NAME) != null &&
             Security.verifyNetstoreIsInstalled(context)
 
-    fun shouldUpdateNetstore(context: Context, minStoreVersionCode: Int) =
+    fun shouldUpdateNetstore(context: Context, minStoreVersionCode: Int = MINIMUM_STORE_VERSION) =
         getNetstoreVersion(context) < minStoreVersionCode
 
     fun updateNetstore(context: Context) {
