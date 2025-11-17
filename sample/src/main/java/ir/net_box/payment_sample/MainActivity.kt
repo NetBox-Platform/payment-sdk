@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             createSinglePurchaseButton.setOnClickListener {
+                // Check if the connection is established before making a purchase
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
                     /**
                      * Create a purchase with a known product ID and receive results in a callback.
@@ -247,8 +248,10 @@ class MainActivity : AppCompatActivity() {
     private fun connectToNetboxPaymentService() {
         connection = payment.connect {
             it.connectionSucceed {
-                // Netbox payment service is ready to use!
                 Log.d(TAG, "You are Connected to netbox payment service")
+                /* Netbox payment service is ready to use!
+                 You can call the purchase functions here safely
+                 No need to check the connection state */
                 binding.connectionStateText.setText(
                     R.string.service_connection_connected
                 )
