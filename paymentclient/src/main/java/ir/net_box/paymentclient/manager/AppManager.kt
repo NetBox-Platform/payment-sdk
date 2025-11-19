@@ -7,7 +7,7 @@ import androidx.core.net.toUri
 
 object AppManager {
 
-    const val MINIMUM_STORE_VERSION = 336
+    const val MINIMUM_STORE_VERSION = 360
 
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {
         context.packageManager.getPackageInfo(packageName, flags)
