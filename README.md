@@ -206,6 +206,7 @@ Step 2. Add the dependency
 
 ## NOTE: To run the sample app be sure to change the default app package name(ir.net_box.payment_sample) to your verified package name
 ## NOTE: In order to use netbox payment service, the user must install and update the Netstore app to minimum version of netstore that supports the payment.
+### The minimum required version of Netstore, determined by supported features, is defined in AppManager.PaymentFeatureMinVersion.
         /**
          * Checks the installation of the Netstore.
          */
@@ -217,7 +218,7 @@ Step 2. Add the dependency
         /** 
          * You can check for updates to the netstore that supports the payment service
          */
-        if (AppManager.shouldUpdateNetstore(this)) {
+        if (AppManager.shouldUpdateNetstore(this), AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
 	    return
