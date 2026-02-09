@@ -7,7 +7,10 @@ import androidx.core.net.toUri
 
 object AppManager {
 
-    const val MINIMUM_STORE_VERSION = 360
+    enum class PaymentFeatureMinVersion(val versionCode: Int) {
+        BASIC_PAYMENT(350),
+        GATEWAY(360)
+    }
 
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {
         context.packageManager.getPackageInfo(packageName, flags)
@@ -20,8 +23,11 @@ object AppManager {
         getPackageInfo(context, NET_STORE_PACKAGE_NAME) != null &&
             Security.verifyNetstoreIsInstalled(context)
 
-    fun shouldUpdateNetstore(context: Context, minStoreVersionCode: Int = MINIMUM_STORE_VERSION) =
-        getNetstoreVersion(context) < minStoreVersionCode
+    fun shouldUpdateNetstore(
+        context: Context,
+        minStoreVersionCode: PaymentFeatureMinVersion = PaymentFeatureMinVersion.BASIC_PAYMENT
+    ) =
+        getNetstoreVersion(context) < minStoreVersionCode.versionCode
 
     fun updateNetstore(context: Context) {
         if (getPackageInfo(context, NET_STORE_PACKAGE_NAME) != null) {

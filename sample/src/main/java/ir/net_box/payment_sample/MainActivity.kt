@@ -37,7 +37,11 @@ class MainActivity : AppCompatActivity() {
         /**
          * You can check for updates to the netstore that supports the payment service.
          */
-        if (AppManager.shouldUpdateNetstore(this)) {
+        if (AppManager.shouldUpdateNetstore(
+                this,
+                AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT
+            )
+        ) {
             // Show a dialog to the user to update the netstore
             AppManager.updateNetstore(this)
             return
