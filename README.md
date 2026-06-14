@@ -127,8 +127,14 @@ Step 2. Add the dependency
       * @param purchaseToken Unique purchase token
       * @param identifier Optional UI identifier (e.g., masked phone number)
       * @param payload Request correlation string
-      * @param price The total product price in **Toman** (including VAT)
-      * @param discount The discount amount applied for this user in **Toman**
+      * @param price Original product price in **Toman** (excluding VAT)
+      * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
+      * If no discount is applied, this should be equal to `price`.
+      * @param vat VAT amount in **Toman**
+      *
+      * Note: The final amount displayed to the user and charged during checkout is calculated as:
+      * `final_price = discountedPrice + vat`
+      *
       * @param productType [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]
       * @param titleFa Persian title (Required)
       * @param titleEn English title (Optional)
@@ -140,8 +146,9 @@ Step 2. Add the dependency
           purchaseToken = "YOUR_PURCHASE_TOKEN",
           identifier = "09123456789",
           payload = "PAYLOAD_123",
-          price = 220000, 
-          discount = 30000,
+          price = 200000, 
+          discountedPrice = 170000,
+          vat = 17000,
           productType = ProductType.PAY_PER_VIEW,
           titleFa = "شغال - قسمت اول فصل اول",
           titleEn = "The Jackal - Season 1 Episode 1"

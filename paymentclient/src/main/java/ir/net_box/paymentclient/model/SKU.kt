@@ -25,17 +25,24 @@ data class SKU(
     val description: String?,
 
     /**
-     * Plan price to show in toman
-     * for example: 150000
+     * The original price of the plan in **Toman** (excluding VAT).
+     * Example: 150000
      */
     val price: Int?,
 
     /**
-     * If your plan have some discount to show, in toman (Optional)
-     * for example: 20000
-     * Note: Pass this null for no discount
+     * The discounted price of the plan in **Toman** (excluding VAT).
+     * If no discount is applied, this should be equal to [price].
      */
-    val discount: Int? = null,
+    val discountedPrice: Int?,
+
+    /**
+     * The VAT amount for this plan in **Toman**.
+     * 
+     * Note: The final amount displayed to the user and charged during checkout is calculated as:
+     * `final_price = discountedPrice + vat`
+     */
+    val vat: Int?,
 
     /**
      * Any extra text (Optional)

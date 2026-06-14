@@ -209,8 +209,14 @@ class Payment(private val context: Context, private val packageName: String) {
      * for example, a masked phone number or email address.
      * @param payload A random client‑generated string used for request correlation.
      * It will be returned in the result bundle under the key `"payload"`.
-     * @param price The total product price in **Toman**, inclusive of VAT.
-     * @param discount The discount amount applied for this user, in **Toman**.
+     * @param price Original product price in **Toman** (excluding VAT).
+     * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
+     * If no discount is applied, this should be equal to [price].
+     * @param vat VAT amount in **Toman**.
+     * 
+     * Note: The final amount displayed to the user and charged during checkout is calculated as:
+     * `final_price = discountedPrice + vat`
+     *
      * @param productType The product type: [ProductType.SUBSCRIPTION] for recurring
      * billing products or [ProductType.PAY_PER_VIEW] for one‑time access items.
      * @param titleFa The product title in **Persian (Farsi)** — *this parameter is required*
@@ -229,7 +235,8 @@ class Payment(private val context: Context, private val packageName: String) {
         identifier: String = "",
         payload: String,
         price: Int,
-        discount: Int,
+        discountedPrice: Int,
+        vat: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String = "",
@@ -245,7 +252,8 @@ class Payment(private val context: Context, private val packageName: String) {
                 identifier,
                 payload,
                 price,
-                discount,
+                discountedPrice,
+                vat,
                 productType,
                 titleFa,
                 titleEn,

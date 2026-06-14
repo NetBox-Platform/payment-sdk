@@ -289,7 +289,8 @@ class PaymentConnection(
         identifier: String,
         payload: String,
         price: Int,
-        discount: Int,
+        discountedPrice: Int,
+        vat: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String,
@@ -306,7 +307,8 @@ class PaymentConnection(
                     payload,
                     packageName,
                     price,
-                    discount,
+                    discountedPrice,
+                    vat,
                     productType.value,
                     titleFa,
                     titleEn,
@@ -331,7 +333,8 @@ class PaymentConnection(
                         ).apply {
                             putString(SOURCE_SKU_ARG_KEY, sourceSku)
                             putInt(PRICE_ARG_KEY, price)
-                            putInt(DISCOUNT_ARG_KEY, discount)
+                            putInt(DISCOUNTED_PRICE_ARG_KEY, discountedPrice)
+                            putInt(VAT_ARG_KEY, vat)
                             putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
                             putString(TITLE_FA_ARG_KEY, titleFa)
                             putString(TITLE_EN_ARG_KEY, titleEn)

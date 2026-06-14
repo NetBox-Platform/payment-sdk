@@ -108,8 +108,14 @@ interface Payable {
      * @param purchaseToken Token for the purchase request.
      * @param identifier UI identifier for the request.
      * @param payload Correlation string for the request.
-     * @param price Product price in Toman.
-     * @param discount Applied discount in Toman.
+     * @param price Original product price in **Toman** (excluding VAT).
+     * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
+     * If no discount is applied, this should be equal to [price].
+     * @param vat VAT amount in **Toman**.
+     * 
+     * Note: The final amount displayed to the user and charged during checkout is calculated as:
+     * `final_price = discountedPrice + vat`
+     *
      * @param productType Type of the product ([ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]).
      * @param titleFa Localized title in Persian.
      * @param titleEn Localized title in English.
@@ -124,7 +130,8 @@ interface Payable {
         identifier: String = "",
         payload: String,
         price: Int,
-        discount: Int,
+        discountedPrice: Int,
+        vat: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String = "",
