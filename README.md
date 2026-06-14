@@ -58,32 +58,44 @@ Step 2. Add the dependency
 	}
 	
 # Usage
+
 ## Initialization
+```kotlin
+    import ir.net_box.paymentclient.payment.Payment
+
     // Initialize the Payment class with the application context and your package name
     val payment = Payment(context = context, packageName = packageName)
+```
+
 ## Connection
+```kotlin
+    import ir.net_box.paymentclient.exception.PaymentException
+
     // Establish a connection to the Netbox payment service
     val connection = payment.connect { callback ->
       callback.connectionSucceed {
           // Connection to Netbox payment service succeeded
       }
-      callback.connectionFailed { throwable ->
+      callback.connectionFailed { exception ->
           // Connection to Netbox payment service failed
+          // exception is of type PaymentException
       }
       callback.disconnected {
           // Disconnected from Netbox payment service
       }
     }
-  
+```
+
 ## Purchase
 ### Purchase a product by Source SKU
-
+```kotlin
+    /*
      * @param sourceSku The SKU to be purchased (e.g., "plan-3-months")
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token associated with this purchase request
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the results of the purchase operation
-     
+     * @param userId Unique User ID for synchronization
+     * @param purchaseToken Unique token for this purchase request
+     * @param payload Request correlation string
+     * @param callback Callback to receive results
+     */
     payment.purchaseProductBySku(
 	    sourceSku = "test-sku",
 	    userId = "YOUR_UNIQUE_USER_ID",
@@ -96,131 +108,136 @@ Step 2. Add the dependency
 		purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
 		    // Handle already succeeded purchase
 		}
-		purchaseCallback.purchaseFailed { throwable, bundle ->
-		    // Handle failed purchase
+		purchaseCallback.purchaseFailed { exception, bundle ->
+		    // Handle failed purchase (exception is PaymentException)
 		}
     }
+```
 
-### Purchase a product with pricing (Deprecated: Use purchaseProduct instead)
-     * @param sourceSku The SKU to be purchased
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token associated with this purchase request
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email (Optional)
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param price The total item price in Toman, including VAT
-     * @param discount The discount amount applied for this user in Toman
-     * @param callback Callback to receive the results of the purchase operation
-     
-	payment.purchaseProductWithPricing(
-		sourceSku = "plan-3-months",
-		userId = "YOUR_UNIQUE_USER_ID",
-		purchaseToken = "YOUR_PURCHASE_TOKEN",
-		identifier = "09123456789",
-		payload = "PAYLOAD_123",
-		price = 220000, // Price in Toman
-		discount = 30000 // Discount in Toman
-		) { purchaseCallback ->
-			purchaseCallback.purchaseSucceed { bundle ->
-			    // Handle successful purchase
-			}
-		   	purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
-			    // Handle already succeeded purchase
-			}
-			purchaseCallback.purchaseFailed { throwable, bundle ->
-			    // Handle failed purchase
-			}
-		}
+### Purchase a product (Recommended)
+```kotlin
+      import ir.net_box.paymentclient.payment.ProductType
 
-### Purchase a product
-    * Purchase a product with pricing and multilanguage titles.
+      /*
+      * Purchase a product with pricing and multilanguage titles.
+      * Supports both subscription and pay‑per‑view product types.
       *
-      * Use this function to initiate a purchase for either a subscription or a pay‑per‑view product.
-      * The SDK displays localized product information and returns the result through callbacks.
-      *
-      * @param sourceSku The SKU of the product to be purchased.
-      * @param userId The unique User ID associated with the purchase to sync user‑specific data with your predefined APIs. (We will call your APIs, if defined, with this user ID.)
-      * @param purchaseToken The unique token generated for this purchase request.
-      * @param identifier An identifier string shown in the purchase UI (e.g., masked phone number or email). *(Optional)*
-      * @param payload A random string used to identify this request. Returned in the result bundle with key `"payload"`.
-      * @param price The total item price in Toman, including VAT.
-      * @param discount The discount amount applied for this user, in Toman.
-      * @param productType The product type — either [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW].
-      * @param titleFa The product title in Persian (required).
-      * @param titleEn The product title in English. *(Optional but strongly recommended for multi‑language support)*
-      * @param titleAr The product title in Arabic. *(Optional but strongly recommended for multi‑language support)*
-      * @param titleTr The product title in Turkish. *(Optional but strongly recommended for multi‑language support)*
-      * @param callback Callback to receive the purchase result.
-         
+      * @param sourceSku Product SKU
+      * @param userId Unique User ID
+      * @param purchaseToken Unique purchase token
+      * @param identifier Optional UI identifier (e.g., masked phone number)
+      * @param payload Request correlation string
+      * @param price The total product price in **Toman** (including VAT)
+      * @param discount The discount amount applied for this user in **Toman**
+      * @param productType [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]
+      * @param titleFa Persian title (Required)
+      * @param titleEn English title (Optional)
+      * @param callback Result callback
+      */
       payment.purchaseProduct(
           sourceSku = "the_jackal_s01e01_sku", 
           userId = "YOUR_UNIQUE_USER_ID",
           purchaseToken = "YOUR_PURCHASE_TOKEN",
           identifier = "09123456789",
           payload = "PAYLOAD_123",
-          price = 220000, // Price in Toman
-          discount = 30000 // Discount in Toman,
-          productType = ProductType.PAY_PER_VIEW, // or ProductType.SUBSCRIPTION,
+          price = 220000, 
+          discount = 30000,
+          productType = ProductType.PAY_PER_VIEW,
           titleFa = "شغال - قسمت اول فصل اول",
-          titleEn = "The Jackal - Season 1 Episode 1",
-          titleAr = "ابن آوى – الحلقة الأولى من الموسم الأول",
-          titleTr = "Çakal – 1.Sezon 1.Bölüm"
+          titleEn = "The Jackal - Season 1 Episode 1"
           ) { purchaseCallback ->
               purchaseCallback.purchaseSucceed { bundle ->
                   // Handle successful purchase
               }
-                 purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+              purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
                   // Handle already succeeded purchase
               }
-              purchaseCallback.purchaseFailed { throwable, bundle ->
-                  // Handle failed purchase
+              purchaseCallback.purchaseFailed { exception, bundle ->
+                  // Handle failed purchase (exception is PaymentException)
               }
           }
+```
+
 ### Via Netbox
-
-      // Initiates a call to the Netbox payment service to display and handle your SKUs.
-
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token of this purchase request for verification
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the results of the purchase operation
-     
+```kotlin
+     /*
+      * Initiates a call to Netbox to display and handle your SKUs.
+      */
      payment.purchaseProductViaNetbox(
             userId = "YOUR_UNIQUE_USER_ID",
             purchaseToken = "YOUR_PURCHASE_TOKEN",
             identifier = "09123456789",
             payload = "PAYLOAD_123"
         )  { purchaseCallback ->
-          // Handle purchase results
+             purchaseCallback.purchaseSucceed { bundle ->
+                 // Handle successful purchase
+             }
+             purchaseCallback.purchaseIsAlreadySucceeded { bundle ->
+                 // Handle already succeeded purchase
+             }
+             purchaseCallback.purchaseFailed { exception, bundle ->
+                 // Handle failed purchase (exception is PaymentException)
+             }
         }
-
+```
 
 ## Disconnect
-
-    // Disconnect from the Netbox payment service
+```kotlin
+    // Disconnect from the service
     connection?.disconnect()
+```
 
-    
+## Handling Results & Exceptions
+
+### Purchase Callback Handlers
+- `purchaseSucceed { bundle -> ... }`: Called upon successful transaction.
+- `purchaseIsAlreadySucceeded { bundle -> ... }`: Called if the product is already owned.
+- `purchaseFailed { exception, bundle -> ... }`: Called when an error occurs.
+
+### Result Bundle Content
+The `Bundle` object returned in all callbacks contains the following data:
+- `netbox_payment_result`: (Int) Result status (1: Success, 2: Failed, 4: Already Succeeded).
+- `user_id`: (String) The user identifier provided in the request.
+- `purchase_token`: (String) The unique token for this purchase.
+- `payload`: (String) The correlation string provided in the request.
+- `source_sku`: (String) The SKU of the product.
+
+### Handling PaymentException
+The `exception` parameter in `connectionFailed` and `purchaseFailed` is of type `PaymentException`. You can handle different error scenarios as follows:
+
+```kotlin
+    import ir.net_box.paymentclient.exception.PaymentException
+
+    purchaseCallback.purchaseFailed { exception, bundle ->
+        when (exception) {
+            is PaymentException.ConnectionFailed -> { 
+                // Error during service connection. Check exception.errorType
+                val reason = exception.message 
+            }
+            is PaymentException.SecurityError -> { 
+                // Permission or binding issues
+            }
+            is PaymentException.PurchaseFailed -> { 
+                // General purchase failure
+            }
+            is PaymentException.BadRequest -> { 
+                // Request rejected by the service
+            }
+        }
+    }
+```
+
+### Pre-checks (Netstore update)
+```kotlin
+        import ir.net_box.paymentclient.manager.AppManager
+
+        if (!AppManager.isNetstoreInstalled(context)) return
+
+        if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT)) {
+            AppManager.updateNetstore(context)
+            return
+        }
+```
+
 ## Full examples are available in the links below:
 [Sample1](https://github.com/NetBox-Platform/payment-sdk/blob/main/sample/src/main/java/ir/net_box/payment_sample/MainActivity.kt)
-
-## NOTE: To run the sample app be sure to change the default app package name(ir.net_box.payment_sample) to your verified package name
-## NOTE: In order to use netbox payment service, the user must install and update the Netstore app to minimum version of netstore that supports the payment.
-### The minimum required version of Netstore, determined by supported features, is defined in AppManager.PaymentFeatureMinVersion.
-### When using purchaseProduct, the minimum required store version is AppManager.PaymentFeatureMinVersion.GATEWAY. Otherwise, AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT is sufficient.
-        /**
-         * Checks the installation of the Netstore.
-         */
-        if (!AppManager.isNetstoreInstalled(applicationContext)) {
-            // Netstore is not installed yet, so you can not use the netbox payment service
-	    return
-        }
-
-        /** 
-         * You can check for updates to the netstore that supports the payment service
-         */
-        if (AppManager.shouldUpdateNetstore(this), AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT) {
-            // Show a dialog to the user to update the netstore
-            AppManager.updateNetstore(this)
-	    return
-        }    
