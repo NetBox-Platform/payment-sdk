@@ -6,10 +6,17 @@ import android.os.IBinder
 import android.util.Log
 import ir.net_box.payment.IPaymentService
 
+/**
+ * Standard [ServiceConnection] implementation for binding to the [IPaymentService] AIDL interface.
+ *
+ * @param onServiceConnected Lambda invoked when the service is successfully bound.
+ * @param onServiceDisconnected Lambda invoked when the service is unexpectedly disconnected.
+ */
 internal open class PaymentServiceConnection(
     private val onServiceConnected: () -> Unit,
     private val onServiceDisconnected: () -> Unit
 ) : ServiceConnection {
+    /** The AIDL interface for interacting with the payment service. */
     var iPaymentService: IPaymentService? = null
 
     override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

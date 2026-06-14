@@ -40,6 +40,7 @@ class PaymentConnection(
 
         shouldUseIntent = false
 
+        // Initialize service connection handlers
         paymentServiceConnection =
             PaymentServiceConnection(
                 ::onServiceConnected,
@@ -47,10 +48,11 @@ class PaymentConnection(
             )
         this.callback = ConnectionCallback(disconnect = ::disconnect).apply(connectionCallback)
 
+        // Verification service connection: First step to ensure the app is authorized
         verificationServiceConnection = PaymentConnectionVerification(
             packageName,
             {
-                // onServiceConnected
+                // onServiceConnected callback from verification
                 verified ->
                 if (verified && !shouldUseIntent) {
                     val flags =
@@ -59,7 +61,7 @@ class PaymentConnection(
                         else
                             Context.BIND_AUTO_CREATE
                     try {
-                        // Second try to connect to netbox payment system
+                        // Second step: Bind to the actual payment service after verification
                         context.bindService(
                             Intent(PAYMENT_SERVICE_ACTION).apply {
                                 `package` = NET_STORE_PACKAGE_NAME
@@ -78,11 +80,11 @@ class PaymentConnection(
                 }
             }
         ) {
-            // onServiceDisconnected
+            // onServiceDisconnected handler for verification service
             this.callback?.connectionFailed?.invoke(Throwable("Bad request!"))
         }
 
-        // First we verify your app validation
+        // Initiation: Start the verification process
         try {
             val flags =
                 if (isAndroid14OrHigher)
@@ -98,12 +100,13 @@ class PaymentConnection(
                 },
                 verificationServiceConnection!!.mConnection, flags
             )
+            
+            // If binding fails directly, fallback to Activity-based intent flow
             if (!bindService) {
                 startConnectionViaIntent()
             }
         } catch (e: SecurityException) {
-            // If there's a security exception (e.g., service binding not permitted),
-            // fallback to starting the activity via intent as a recovery path-.
+            // Fallback to intent if security restrictions prevent service binding
             e.printStackTrace()
             startConnectionViaIntent()
         }

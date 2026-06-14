@@ -9,6 +9,14 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import ir.net_box.paymentclient.util.PACKAGE_NAME_ARG_KEY
 
+/**
+ * Handles the initial verification step when connecting to the Netbox payment system.
+ * This class ensures that the calling application is authorized before full service binding occurs.
+ *
+ * @param packageName The package name of the calling application.
+ * @param onServiceConnected Callback invoked after verification, returning true if successful.
+ * @param onServiceDisconnected Callback invoked if the verification service disconnects unexpectedly.
+ */
 internal class PaymentConnectionVerification(
     private val packageName: String,
     private val onServiceConnected: (Boolean) -> Unit,
