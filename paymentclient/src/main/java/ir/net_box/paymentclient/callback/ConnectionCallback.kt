@@ -2,6 +2,7 @@ package ir.net_box.paymentclient.callback
 
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.ConnectionState
+import ir.net_box.paymentclient.exception.PaymentException
 
 /**
  * Callback class to handle the connection events for the Payment service.
@@ -15,7 +16,7 @@ class ConnectionCallback(private val disconnect: () -> Unit) : Connection {
 
     internal var connectionSucceed: () -> Unit = {}
 
-    internal var connectionFailed: (throwable: Throwable) -> Unit = {}
+    internal var connectionFailed: (exception: PaymentException) -> Unit = {}
 
     internal var disconnected: () -> Unit = {}
 
@@ -31,7 +32,12 @@ class ConnectionCallback(private val disconnect: () -> Unit) : Connection {
         }
     }
 
-    fun connectionFailed(block: (throwable: Throwable) -> Unit) {
+    /**
+     * Sets the callback to be invoked when the connection to the service fails.
+     *
+     * @param block A lambda function that receives a [PaymentException] explaining the failure.
+     */
+    fun connectionFailed(block: (exception: PaymentException) -> Unit) {
         connectionFailed = {
             connectionState = ConnectionState.FailedToConnect
             block(it)

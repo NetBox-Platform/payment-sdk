@@ -9,6 +9,7 @@ import android.os.Bundle
 import ir.net_box.paymentclient.callback.ConnectionCallback
 import ir.net_box.paymentclient.connection.Connection
 import ir.net_box.paymentclient.connection.PaymentConnection
+import ir.net_box.paymentclient.exception.PaymentException
 import ir.net_box.paymentclient.util.isAlreadySucceeded
 import ir.net_box.paymentclient.util.isAndroid13OrHigher
 import ir.net_box.paymentclient.util.isFailed
@@ -45,17 +46,22 @@ class Payment(private val context: Context, private val packageName: String) {
     ) {
         val purchaseCallback = PurchaseCallback().apply(callback)
         when {
+            // Case 1: The service returned an immediate synchronous result (Success)
             purchaseProduct.isSucceed() -> {
                 purchaseCallback.purchaseSucceed?.let { it(purchaseProduct) }
             }
+            // Case 2: The service returned an immediate synchronous result (Already Succeeded)
             purchaseProduct.isAlreadySucceeded() -> {
                 purchaseCallback.purchaseIsAlreadySucceeded?.let { it(purchaseProduct) }
             }
+            // Case 3: The service returned an immediate synchronous result (Failure)
             purchaseProduct.isFailed() -> {
                 purchaseCallback.purchaseFailed?.invoke(
-                    Throwable("Purchase is failed!"), purchaseProduct
+                    PaymentException.PurchaseFailed("Purchase is failed!"), purchaseProduct
                 )
             }
+            // Case 4: No immediate result. This happens when an Activity was started (Intent flow).
+            // We must register a BroadcastReceiver to listen for the result asynchronously.
             else -> {
                 if (!isReceiverRegistered) {
                     resultBroadcastReceiver = ResultBroadcastReceiver { intent ->
@@ -72,7 +78,7 @@ class Payment(private val context: Context, private val packageName: String) {
                             }
                             intent.isFailed() -> {
                                 purchaseCallback.purchaseFailed?.invoke(
-                                    Throwable("Purchase is failed!"), purchaseProduct
+                                    PaymentException.PurchaseFailed("Purchase is failed!"), purchaseProduct
                                 )
                             }
                         }
@@ -91,8 +97,9 @@ class Payment(private val context: Context, private val packageName: String) {
                     }
                     isReceiverRegistered = true
                 } else {
+                    // Receiver already registered, avoiding multiple registrations for same request
                     purchaseCallback.purchaseFailed?.invoke(
-                        Throwable("Purchase result is unknown!"), purchaseProduct
+                        PaymentException.Unknown("Purchase result is unknown!"), purchaseProduct
                     )
                 }
             }
@@ -118,14 +125,16 @@ class Payment(private val context: Context, private val packageName: String) {
     }
 
     /**
-     * Creates a purchase with a specified product ID, using the provided purchase token and payload.
-     * After a successful purchase, the verification API is called with the purchase token.
-     * @param sourceSku The SKU to be purchased
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token associated with this purchase request
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email (Optional)
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the results of the purchase operation
+     * Initiates a purchase for a product identified by its SKU.
+     *
+     * This is the standard method to purchase a pre-defined product.
+     *
+     * @param sourceSku The SKU of the product to be purchased.
+     * @param userId The unique User ID associated with the purchase to sync user-specific data.
+     * @param purchaseToken A unique token for this specific purchase request (used for verification).
+     * @param identifier Optional identifier to show in the purchase UI (e.g., user's phone/email).
+     * @param payload A random string returned in the result bundle to identify the request.
+     * @param callback Callback to receive the [PurchaseCallback] for handling results.
      */
     fun purchaseProductBySku(
         sourceSku: String,
@@ -141,16 +150,18 @@ class Payment(private val context: Context, private val packageName: String) {
     }
 
     /**
-     * Creates a purchase with a specified product ID, using the provided purchase token and payload.
-     * After a successful purchase, the verification API is called with the purchase token.
-     * @param sourceSku The SKU to be purchased
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token associated with this purchase request
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email (Optional)
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param price The total item price in Toman, including VAT
-     * @param discount The discount amount applied for this user in Toman
-     * @param callback Callback to receive the results of the purchase operation
+     * Initiates a purchase with explicit pricing.
+     *
+     * @deprecated Use [purchaseProduct] instead, which supports product types and localized titles.
+     *
+     * @param sourceSku The SKU to be purchased.
+     * @param userId Unique User ID for synchronization.
+     * @param purchaseToken Unique token for verification.
+     * @param identifier Optional UI identifier (e.g., phone/email).
+     * @param payload Request correlation string.
+     * @param price Total price in Toman, including VAT.
+     * @param discount Discount amount in Toman.
+     * @param callback Callback for purchase results.
      */
     @Deprecated(
         message = "Use purchaseProduct() instead. The new version supports productType and localized titles.",
@@ -293,12 +304,15 @@ class Payment(private val context: Context, private val packageName: String) {
     }
 
     /**
-     * Initiates the purchase of a product via the Netbox payment service.
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token of this purchase request for verification
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the results of the purchase operation
+     * Initiates a purchase through the Netbox store interface.
+     *
+     * This allows the user to select from available products or plans within the Netbox environment.
+     *
+     * @param userId Unique User ID for synchronization.
+     * @param purchaseToken Unique token for verification.
+     * @param identifier Optional UI identifier (e.g., phone/email).
+     * @param payload Request correlation string.
+     * @param callback Callback for purchase results.
      */
     fun purchaseProductViaNetbox(
         userId: String,

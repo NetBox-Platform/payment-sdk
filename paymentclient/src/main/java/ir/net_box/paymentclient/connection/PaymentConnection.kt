@@ -9,6 +9,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import ir.net_box.paymentclient.callback.ConnectionCallback
+import ir.net_box.paymentclient.exception.PaymentException
 import ir.net_box.paymentclient.exception.ServiceNotInitializedException
 import ir.net_box.paymentclient.manager.AppManager.NET_STORE_PACKAGE_NAME
 import ir.net_box.paymentclient.payment.Payment.Companion.PAYMENT_INTENT_BROADCAST_ACTION
@@ -71,17 +72,17 @@ class PaymentConnection(
                             paymentServiceConnection!!, flags
                         )
                     } catch (e: SecurityException) {
-                        this.callback?.connectionFailed?.invoke(e)
+                        this.callback?.connectionFailed?.invoke(PaymentException.SecurityError(e))
                         e.printStackTrace()
                     }
                 } else {
                     this.callback?.connectionFailed
-                        ?.invoke(Throwable("Connection failed. please try again"))
+                        ?.invoke(PaymentException.ConnectionFailed(ErrorType.UNKNOWN))
                 }
             }
         ) {
             // onServiceDisconnected handler for verification service
-            this.callback?.connectionFailed?.invoke(Throwable("Bad request!"))
+            this.callback?.connectionFailed?.invoke(PaymentException.BadRequest())
         }
 
         // Initiation: Start the verification process
@@ -133,8 +134,8 @@ class PaymentConnection(
                 } else {
                     val errorType = ErrorType.values().find {
                         it.code == errorCode
-                    }?.name?.lowercase()
-                    this.callback?.connectionFailed?.invoke(Throwable("Reason: $errorType"))
+                    } ?: ErrorType.UNKNOWN
+                    this.callback?.connectionFailed?.invoke(PaymentException.ConnectionFailed(errorType))
                 }
             }
         }
@@ -178,8 +179,8 @@ class PaymentConnection(
         } else {
             val errorType = ErrorType.values().find {
                 it.code == errorCode
-            }?.name?.lowercase()
-            this.callback?.connectionFailed?.invoke(Throwable("Reason: $errorType"))
+            } ?: ErrorType.UNKNOWN
+            this.callback?.connectionFailed?.invoke(PaymentException.ConnectionFailed(errorType))
         }
     }
 
