@@ -192,7 +192,13 @@ class MainActivity : AppCompatActivity() {
                 /**
                  * Create a purchase for a specific product and receive the result through a callback.
                  * For Pay‑Per‑View or subscriptions, display available plans in your UI,
-                 * then pass the selected SKU, item price (including VAT), and discount values.
+                 * then pass the selected SKU, original price (excluding VAT), discounted price (excluding VAT),
+                 * and VAT value.
+                 *
+                 * Note: The final amount displayed to the user and charged during checkout is calculated as:
+                 * `final_price = discountedPrice + vat`
+                 *
+                 * If no discount is applied, `discountedPrice` should be equal to `price`.
                  */
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
                     payment.purchaseProduct(
@@ -201,8 +207,9 @@ class MainActivity : AppCompatActivity() {
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123",
-                        price = 220000, // Price in Toman
-                        discount = 30000, // Discount in Toman
+                        price = 200000, // Original price (excluding VAT)
+                        discountedPrice = 170000, // Discounted price (excluding VAT)
+                        vat = 17000, // VAT in Toman
                         productType = ProductType.SUBSCRIPTION,
                         titleFa = "اشتراک سه ماهه",
                         titleEn = "Three‑month subscription",
@@ -259,7 +266,8 @@ class MainActivity : AppCompatActivity() {
                  * This example shows how to call [purchaseProduct] when the
                  * connection is established and handle both success and failure results.
                  *
-                 * - **Price & Discount:** in Toman.
+                 * - **Pricing:** in Toman (excluding VAT).
+                 * - **Final Price Calculation:** `final_price = discountedPrice + vat`
                  * - **Product Type:** [ProductType.PAY_PER_VIEW]
                  * - **Required:** `titleFa`
                  * - **Optional but strongly recommended:** `titleEn`, `titleAr`, `titleTr` (for showing product titles in the appropriate language based on app locale)
@@ -271,8 +279,9 @@ class MainActivity : AppCompatActivity() {
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123",
-                        price = 30000, // Price in Toman (including VAT)
-                        discount = 5000, // Discount in Toman
+                        price = 30000, // Original price (excluding VAT)
+                        discountedPrice = 25000, // Discounted price (excluding VAT)
+                        vat = 2500, // VAT in Toman
                         productType = ProductType.PAY_PER_VIEW,
                         titleFa = "شغال - قسمت اول فصل اول",
                         titleEn = "The Jackal - Season 1 Episode 1",
