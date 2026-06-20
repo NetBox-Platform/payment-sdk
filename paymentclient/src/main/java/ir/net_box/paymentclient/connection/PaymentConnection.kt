@@ -289,8 +289,7 @@ class PaymentConnection(
         identifier: String,
         payload: String,
         price: Int,
-        discountedPrice: Int,
-        vat: Int,
+        discount: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String,
@@ -307,8 +306,7 @@ class PaymentConnection(
                     payload,
                     packageName,
                     price,
-                    discountedPrice,
-                    vat,
+                    discount,
                     productType.value,
                     titleFa,
                     titleEn,
@@ -333,8 +331,7 @@ class PaymentConnection(
                         ).apply {
                             putString(SOURCE_SKU_ARG_KEY, sourceSku)
                             putInt(PRICE_ARG_KEY, price)
-                            putInt(DISCOUNTED_PRICE_ARG_KEY, discountedPrice)
-                            putInt(VAT_ARG_KEY, vat)
+                            putInt(DISCOUNT_ARG_KEY, discount)
                             putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
                             putString(TITLE_FA_ARG_KEY, titleFa)
                             putString(TITLE_EN_ARG_KEY, titleEn)
@@ -350,25 +347,46 @@ class PaymentConnection(
         }
     }
 
-    override fun sendSkuDetails(
-        skusBundle: List<Bundle>,
+    override fun purchaseProductVatInclusive(
+        sourceSku: String,
         userId: String,
         purchaseToken: String,
         identifier: String,
-        payload: String
+        payload: String,
+        price: Int,
+        discountedPrice: Int,
+        vat: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String,
+        titleAr: String,
+        titleTr: String
     ): Bundle {
         if (isServiceBound) {
-            val skuDetailsBundle =
-                paymentServiceConnection?.iPaymentService?.sendSkuDetails(
-                    skusBundle, userId, purchaseToken, identifier, payload, packageName
+            val purchaseProductBundle =
+                paymentServiceConnection?.iPaymentService?.purchaseProductVatInclusive(
+                    sourceSku,
+                    userId,
+                    purchaseToken,
+                    identifier,
+                    payload,
+                    packageName,
+                    price,
+                    discountedPrice,
+                    vat,
+                    productType.value,
+                    titleFa,
+                    titleEn,
+                    titleAr,
+                    titleTr
                 ) ?: run {
                     throw ServiceNotInitializedException()
                 }
-            return skuDetailsBundle
+            return purchaseProductBundle
         } else if (shouldUseIntent) {
             context.tryStartActivity(
                 getPaymentIntent().apply {
-                    putExtra(PAYMENT_TYPE, 3)
+                    putExtra(PAYMENT_TYPE, 7)
                     putExtra(
                         PAYMENT_BUNDLE_ARGS,
                         getResultBundle(
@@ -376,48 +394,17 @@ class PaymentConnection(
                             purchaseToken,
                             identifier,
                             payload,
-                            packageName
+                            packageName,
                         ).apply {
-                            putParcelableArrayList(SKUS_ARG_KEY, ArrayList(skusBundle))
-                        }
-                    )
-                }
-            )
-            return getResultBundle(userId, purchaseToken, identifier, payload)
-        } else {
-            throw ServiceNotInitializedException()
-        }
-    }
-
-    override fun sendSkuDetails(
-        skusJson: String,
-        userId: String,
-        purchaseToken: String,
-        identifier: String,
-        payload: String
-    ): Bundle {
-        if (isServiceBound) {
-            val skuDetailsBundle =
-                paymentServiceConnection?.iPaymentService?.sendSkuDetailsJson(
-                    skusJson, userId, purchaseToken, identifier, payload, packageName
-                ) ?: run {
-                    throw ServiceNotInitializedException()
-                }
-            return skuDetailsBundle
-        } else if (shouldUseIntent) {
-            context.tryStartActivity(
-                getPaymentIntent().apply {
-                    putExtra(PAYMENT_TYPE, 4)
-                    putExtra(
-                        PAYMENT_BUNDLE_ARGS,
-                        getResultBundle(
-                            userId,
-                            purchaseToken,
-                            identifier,
-                            payload,
-                            packageName
-                        ).apply {
-                            putString(SKUS_ARG_KEY, skusJson)
+                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                            putInt(PRICE_ARG_KEY, price)
+                            putInt(DISCOUNTED_PRICE_ARG_KEY, discountedPrice)
+                            putInt(VAT_ARG_KEY, vat)
+                            putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
+                            putString(TITLE_FA_ARG_KEY, titleFa)
+                            putString(TITLE_EN_ARG_KEY, titleEn)
+                            putString(TITLE_AR_ARG_KEY, titleAr)
+                            putString(TITLE_TR_ARG_KEY, titleTr)
                         }
                     )
                 }

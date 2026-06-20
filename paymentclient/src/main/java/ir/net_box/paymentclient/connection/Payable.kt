@@ -9,42 +9,6 @@ import ir.net_box.paymentclient.payment.ProductType
 interface Payable {
 
     /**
-     * Sends SKU details to the payment service using a list of Bundles.
-     *
-     * @param skusBundle List of Bundles containing SKU information.
-     * @param userId Unique identifier for the user.
-     * @param purchaseToken Token for the purchase request.
-     * @param identifier UI identifier for the request.
-     * @param payload Correlation string for the request.
-     * @return Result Bundle from the service.
-     */
-    fun sendSkuDetails(
-        skusBundle: List<Bundle>,
-        userId: String,
-        purchaseToken: String,
-        identifier: String,
-        payload: String
-    ): Bundle
-
-    /**
-     * Sends SKU details to the payment service using a JSON string.
-     *
-     * @param skusJson JSON string containing SKU details.
-     * @param userId Unique identifier for the user.
-     * @param purchaseToken Token for the purchase request.
-     * @param identifier UI identifier for the request.
-     * @param payload Correlation string for the request.
-     * @return Result Bundle from the service.
-     */
-    fun sendSkuDetails(
-        skusJson: String,
-        userId: String,
-        purchaseToken: String,
-        identifier: String,
-        payload: String
-    ): Bundle
-
-    /**
      * Initiates a purchase through the Netbox store application.
      *
      * @param userId Unique identifier for the user.
@@ -108,6 +72,38 @@ interface Payable {
      * @param purchaseToken Token for the purchase request.
      * @param identifier UI identifier for the request.
      * @param payload Correlation string for the request.
+     * @param price Product price in Toman.
+     * @param discount Applied discount in Toman.
+     * @param productType Type of the product ([ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]).
+     * @param titleFa Localized title in Persian.
+     * @param titleEn Localized title in English.
+     * @param titleAr Localized title in Arabic.
+     * @param titleTr Localized title in Turkish.
+     * @return Result Bundle from the service.
+     */
+    fun purchaseProduct(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String = "",
+        payload: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String = "",
+        titleAr: String = "",
+        titleTr: String = ""
+    ): Bundle
+
+    /**
+     * Purchases a product with pricing and localized metadata.
+     *
+     * @param sourceSku SKU of the product.
+     * @param userId Unique identifier for the user.
+     * @param purchaseToken Token for the purchase request.
+     * @param identifier UI identifier for the request.
+     * @param payload Correlation string for the request.
      * @param price Original product price in **Toman** (excluding VAT).
      * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
      * If no discount is applied, this should be equal to [price].
@@ -123,7 +119,7 @@ interface Payable {
      * @param titleTr Localized title in Turkish.
      * @return Result Bundle from the service.
      */
-    fun purchaseProduct(
+    fun purchaseProductVatInclusive(
         sourceSku: String,
         userId: String,
         purchaseToken: String,

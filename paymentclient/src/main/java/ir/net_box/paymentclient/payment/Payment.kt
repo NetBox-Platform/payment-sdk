@@ -209,6 +209,72 @@ class Payment(private val context: Context, private val packageName: String) {
      * for example, a masked phone number or email address.
      * @param payload A random client‑generated string used for request correlation.
      * It will be returned in the result bundle under the key `"payload"`.
+     * @param price The total product price in **Toman**, inclusive of VAT.
+     * @param discount The discount amount applied for this user, in **Toman**.
+     * @param productType The product type: [ProductType.SUBSCRIPTION] for recurring
+     * billing products or [ProductType.PAY_PER_VIEW] for one‑time access items.
+     * @param titleFa The product title in **Persian (Farsi)** — *this parameter is required*
+     * and used for displaying localized purchase information in the checkout UI.
+     * @param titleEn The product title in **English** — optional but **strongly recommended**
+     * to enhance internationalized UI and cross‑language presentation.
+     * @param titleAr The product title in **Arabic** — optional, recommended for Arabic localizations.
+     * @param titleTr The product title in **Turkish** — optional, recommended for Turkish users.
+     * @param callback Callback invoked upon completion of the purchase operation,
+     * returning a [PurchaseCallback] indicating success, cancellation, or failure.
+     */
+    @Deprecated(
+        message = "Use the version of purchaseProduct that supports discountedPrice and vat.",
+    )
+    fun purchaseProduct(
+        sourceSku: String,
+        userId: String,
+        purchaseToken: String,
+        identifier: String = "",
+        payload: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String = "",
+        titleAr: String = "",
+        titleTr: String = "",
+        callback: (PurchaseCallback) -> Unit
+    ) {
+        val purchaseProduct =
+            connection.purchaseProduct(
+                sourceSku,
+                userId,
+                purchaseToken,
+                identifier,
+                payload,
+                price,
+                discount,
+                productType,
+                titleFa,
+                titleEn,
+                titleAr,
+                titleTr
+            )
+        handlePurchaseResult(purchaseProduct, callback)
+    }
+    
+
+    /**
+     * Creates a purchase with explicit pricing and localized product metadata.
+     *
+     * This method supports both subscription and pay‑per‑view product types.
+     * After a successful purchase transaction, the SDK automatically triggers the
+     * verification API using the provided purchase token.
+     *
+     * @param sourceSku The unique SKU of the product to be purchased.
+     * @param userId The unique user identifier associated with this purchase.
+     * Used to synchronize user‑specific purchase data with your backend APIs.
+     * (Your pre‑defined APIs will be called with this `userId` if configured.)
+     * @param purchaseToken The unique token representing this purchase request.
+     * @param identifier An optional identifier shown on the purchase page/UI —
+     * for example, a masked phone number or email address.
+     * @param payload A random client‑generated string used for request correlation.
+     * It will be returned in the result bundle under the key `"payload"`.
      * @param price Original product price in **Toman** (excluding VAT).
      * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
      * If no discount is applied, this should be equal to [price].
@@ -245,7 +311,7 @@ class Payment(private val context: Context, private val packageName: String) {
         callback: (PurchaseCallback) -> Unit
     ) {
         val purchaseProduct =
-            connection.purchaseProduct(
+            connection.purchaseProductVatInclusive(
                 sourceSku,
                 userId,
                 purchaseToken,
@@ -263,53 +329,6 @@ class Payment(private val context: Context, private val packageName: String) {
         handlePurchaseResult(purchaseProduct, callback)
     }
 
-    /**
-     * Send all SKUs, such as subscription plans, and receive results in a callback.
-     * @param skusBundle Contains all SKUs to be sent to the Netbox payment system.
-     *                   @see ir.net_box.payment_sample.MainActivity
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token of this purchase request for verification
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the purchase results
-     */
-    fun sendSkus(
-        skusBundle: List<Bundle>,
-        userId: String,
-        purchaseToken: String,
-        identifier: String,
-        payload: String,
-        callback: (PurchaseCallback) -> Unit
-    ) {
-        val sendSkus = connection.sendSkuDetails(
-            skusBundle, userId, purchaseToken, identifier, payload
-        )
-        handlePurchaseResult(sendSkus, callback)
-    }
-
-    /**
-     * Send all SKUs, such as subscription plans, and receive results in a callback.
-     * @param skusJson Contains all SKUs in json format.
-     *                   @see ir.net_box.payment_sample.MainActivity
-     * @param userId The unique User ID associated with the purchase to sync user specific data with your pre-defined apis, (We will call your apis (if defined) with this user id)
-     * @param purchaseToken The unique token of this purchase request for verification
-     * @param identifier An identifier string for the request to show in the purchase page/UI, e.g., user masked phone number or email
-     * @param payload A random string used to identify the request, which will be sent back in the bundle with the key named "payload"
-     * @param callback Callback to receive the purchase results
-     */
-    fun sendSkus(
-        skusJson: String,
-        userId: String,
-        purchaseToken: String,
-        identifier: String,
-        payload: String,
-        callback: (PurchaseCallback) -> Unit
-    ) {
-        val sendSkus = connection.sendSkuDetails(
-            skusJson, userId, purchaseToken, identifier, payload
-        )
-        handlePurchaseResult(sendSkus, callback)
-    }
 
     /**
      * Initiates a purchase through the Netbox store interface.
