@@ -19,7 +19,8 @@ object AppManager {
         /** Basic payment support. */
         BASIC_PAYMENT(350),
         /** Support for advanced gateway features and localized products. */
-        GATEWAY(360)
+        GATEWAY(360),
+        GATEWAY_VAT_INCLUSIVE(371)
     }
 
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {
