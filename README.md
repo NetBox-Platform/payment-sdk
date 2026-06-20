@@ -114,7 +114,7 @@ Step 2. Add the dependency
     }
 ```
 
-### Purchase a product (Recommended)
+### Purchase a product
 ```kotlin
       import ir.net_box.paymentclient.payment.ProductType
 
@@ -137,7 +137,9 @@ Step 2. Add the dependency
       *
       * @param productType [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]
       * @param titleFa Persian title (Required)
-      * @param titleEn English title (Optional)
+      * @param titleEn English title (Optional but recommended)
+      * @param titleAr Arabic title (Optional)
+      * @param titleAr Turkish title (Optional)
       * @param callback Result callback
       */
       payment.purchaseProduct(
@@ -151,7 +153,9 @@ Step 2. Add the dependency
           vat = 17000,
           productType = ProductType.PAY_PER_VIEW,
           titleFa = "شغال - قسمت اول فصل اول",
-          titleEn = "The Jackal - Season 1 Episode 1"
+          titleEn = "The Jackal - Season 1 Episode 1",
+          titleAr = "ابن آوى – الحلقة الأولى من الموسم الأول",
+          titleTr = "Çakal – 1.Sezon 1.Bölüm"
           ) { purchaseCallback ->
               purchaseCallback.purchaseSucceed { bundle ->
                   // Handle successful purchase
@@ -166,6 +170,8 @@ Step 2. Add the dependency
 ```
 
 ### Via Netbox
+> **Highly Recommended**: Use this method for subscription plans to ensure the best user experience and compatibility with Netbox-managed SKUs.
+
 ```kotlin
      /*
       * Initiates a call to Netbox to display and handle your SKUs.
@@ -202,12 +208,13 @@ Step 2. Add the dependency
 - `purchaseFailed { exception, bundle -> ... }`: Called when an error occurs.
 
 ### Result Bundle Content
-The `Bundle` object returned in all callbacks contains the following data:
-- `netbox_payment_result`: (Int) Result status (1: Success, 2: Failed, 4: Already Succeeded).
-- `user_id`: (String) The user identifier provided in the request.
-- `purchase_token`: (String) The unique token for this purchase.
-- `payload`: (String) The correlation string provided in the request.
-- `source_sku`: (String) The SKU of the product.
+The `Bundle` object returned in all callbacks contains the following data. You can use the constants from `ir.net_box.paymentclient.util.*` instead of hardcoded strings:
+
+- `NETBOX_PAYMENT_RESULT`: (Int) Result status (1: Success, 2: Failed, 4: Already Succeeded).
+- `SOURCE_USER_ID_ARG_KEY`: (String) The user identifier provided in the request.
+- `PURCHASE_TOKEN_ARG_KEY`: (String) The unique token for this purchase.
+- `PAYLOAD_ARG_KEY`: (String) The correlation string provided in the request.
+- `SOURCE_SKU_ARG_KEY`: (String) The SKU of the product.
 
 ### Handling PaymentException
 The `exception` parameter in `connectionFailed` and `purchaseFailed` is of type `PaymentException`. You can handle different error scenarios as follows:
@@ -235,15 +242,20 @@ The `exception` parameter in `connectionFailed` and `purchaseFailed` is of type 
 ```
 
 ### Pre-checks (Netstore update)
+It is essential to check if Netstore is installed and updated to support the features you are using.
+
 ```kotlin
-        import ir.net_box.paymentclient.manager.AppManager
-
-        if (!AppManager.isNetstoreInstalled(context)) return
-
-        if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT)) {
-            AppManager.updateNetstore(context)
-            return
-        }
+    import ir.net_box.paymentclient.manager.AppManager
+	
+	if (!AppManager.isNetstoreInstalled(context)) return
+	
+	// Check for the minimum version required for your features:
+    // - BASIC_PAYMENT: For standard SKU-based purchases.
+    // - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling.
+	if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.GATEWAY_VAT_INCLUSIVE)) {
+		AppManager.updateNetstore(context)
+		return
+	}
 ```
 
 ## Full examples are available in the links below:
