@@ -114,7 +114,7 @@ Step 2. Add the dependency
     }
 ```
 
-### Purchase a product (Recommended)
+### Purchase a product
 ```kotlin
       import ir.net_box.paymentclient.payment.ProductType
 
@@ -236,14 +236,14 @@ The `exception` parameter in `connectionFailed` and `purchaseFailed` is of type 
 
 ### Pre-checks (Netstore update)
 ```kotlin
-        import ir.net_box.paymentclient.manager.AppManager
-
-        if (!AppManager.isNetstoreInstalled(context)) return
-
-        if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT)) {
-            AppManager.updateNetstore(context)
-            return
-        }
+    import ir.net_box.paymentclient.manager.AppManager
+	
+	if (!AppManager.isNetstoreInstalled(context)) return
+	
+	if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.BASIC_PAYMENT)) {
+		AppManager.updateNetstore(context)
+		return
+	}
 ```
 
 ## Full examples are available in the links below:
