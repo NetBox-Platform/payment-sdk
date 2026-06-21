@@ -88,6 +88,8 @@ val connection = payment.connect { callback ->
 
 ## Purchase
 ### Purchase a product by Source SKU
+> **Note**: An **available plans API** is required for this method to function correctly. The **sourceSku** must be identical to the one provided in the **plans API**.
+
 ```kotlin
 /*
  * @param sourceSku The SKU to be purchased (e.g., "plan-3-months")
