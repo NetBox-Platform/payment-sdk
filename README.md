@@ -285,7 +285,7 @@ if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion
 
 :::caution Deprecated
 
-Use [`purchaseSingleProduct()`](#purchasesingleproduct) instead. This method is maintained for backward compatibility.
+Use [`purchaseSingleProduct()`](#purchase-a-single-product) instead. This method is maintained for backward compatibility.
 :::
 
 
@@ -295,6 +295,6 @@ Use [`purchaseSingleProduct()`](#purchasesingleproduct) instead. This method is 
 
 :::caution Deprecated
 
-Use [`purchaseSingleProduct()`](#purchasesingleproduct) instead. This method is maintained for backward compatibility.
+Use [`purchaseSingleProduct()`](#purchase-a-single-product) instead. This method is maintained for backward compatibility.
 :::
 
