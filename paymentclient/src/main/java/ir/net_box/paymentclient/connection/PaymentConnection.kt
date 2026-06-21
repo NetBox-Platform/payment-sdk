@@ -232,6 +232,7 @@ class PaymentConnection(
         }
     }
 
+    @Deprecated("Use purchaseSingleProduct for the new VAT-exclusive pricing logic.")
     override fun purchaseProductWithPricing(
         sourceSku: String,
         userId: String,
@@ -282,6 +283,7 @@ class PaymentConnection(
         }
     }
 
+    @Deprecated("Use purchaseSingleProduct for the new VAT-exclusive pricing logic.")
     override fun purchaseProduct(
         sourceSku: String,
         userId: String,
@@ -319,25 +321,20 @@ class PaymentConnection(
         } else if (shouldUseIntent) {
             context.tryStartActivity(
                 getPaymentIntent().apply {
-                    putExtra(PAYMENT_TYPE, 6)
-                    putExtra(
-                        PAYMENT_BUNDLE_ARGS,
-                        getResultBundle(
-                            userId,
-                            purchaseToken,
-                            identifier,
-                            payload,
-                            packageName,
-                        ).apply {
-                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
-                            putInt(PRICE_ARG_KEY, price)
-                            putInt(DISCOUNT_ARG_KEY, discount)
-                            putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
-                            putString(TITLE_FA_ARG_KEY, titleFa)
-                            putString(TITLE_EN_ARG_KEY, titleEn)
-                            putString(TITLE_AR_ARG_KEY, titleAr)
-                            putString(TITLE_TR_ARG_KEY, titleTr)
-                        }
+                    putExtra(PAYMENT_TYPE, 6) // Legacy detailed purchase
+                    addPurchaseProductMetadata(
+                        userId,
+                        purchaseToken,
+                        identifier,
+                        payload,
+                        sourceSku,
+                        price,
+                        discount,
+                        productType,
+                        titleFa,
+                        titleEn,
+                        titleAr,
+                        titleTr
                     )
                 }
             )
@@ -347,15 +344,14 @@ class PaymentConnection(
         }
     }
 
-    override fun purchaseProductVatInclusive(
+    override fun purchaseSingleProduct(
         sourceSku: String,
         userId: String,
         purchaseToken: String,
         identifier: String,
         payload: String,
         price: Int,
-        discountedPrice: Int,
-        vat: Int,
+        discount: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String,
@@ -364,7 +360,7 @@ class PaymentConnection(
     ): Bundle {
         if (isServiceBound) {
             val purchaseProductBundle =
-                paymentServiceConnection?.iPaymentService?.purchaseProductVatInclusive(
+                paymentServiceConnection?.iPaymentService?.purchaseProductVatExclusive(
                     sourceSku,
                     userId,
                     purchaseToken,
@@ -372,8 +368,7 @@ class PaymentConnection(
                     payload,
                     packageName,
                     price,
-                    discountedPrice,
-                    vat,
+                    discount,
                     productType.value,
                     titleFa,
                     titleEn,
@@ -386,26 +381,20 @@ class PaymentConnection(
         } else if (shouldUseIntent) {
             context.tryStartActivity(
                 getPaymentIntent().apply {
-                    putExtra(PAYMENT_TYPE, 7)
-                    putExtra(
-                        PAYMENT_BUNDLE_ARGS,
-                        getResultBundle(
-                            userId,
-                            purchaseToken,
-                            identifier,
-                            payload,
-                            packageName,
-                        ).apply {
-                            putString(SOURCE_SKU_ARG_KEY, sourceSku)
-                            putInt(PRICE_ARG_KEY, price)
-                            putInt(DISCOUNTED_PRICE_ARG_KEY, discountedPrice)
-                            putInt(VAT_ARG_KEY, vat)
-                            putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
-                            putString(TITLE_FA_ARG_KEY, titleFa)
-                            putString(TITLE_EN_ARG_KEY, titleEn)
-                            putString(TITLE_AR_ARG_KEY, titleAr)
-                            putString(TITLE_TR_ARG_KEY, titleTr)
-                        }
+                    putExtra(PAYMENT_TYPE, 7) // VAT-exclusive detailed purchase
+                    addPurchaseProductMetadata(
+                        userId,
+                        purchaseToken,
+                        identifier,
+                        payload,
+                        sourceSku,
+                        price,
+                        discount,
+                        productType,
+                        titleFa,
+                        titleEn,
+                        titleAr,
+                        titleTr
                     )
                 }
             )
@@ -523,6 +512,41 @@ class PaymentConnection(
             `package` = NET_STORE_PACKAGE_NAME
             putExtra(PACKAGE_NAME_ARG_KEY, packageName)
         }
+
+    private fun Intent.addPurchaseProductMetadata(
+        userId: String,
+        purchaseToken: String,
+        identifier: String,
+        payload: String,
+        sourceSku: String,
+        price: Int,
+        discount: Int,
+        productType: ProductType,
+        titleFa: String,
+        titleEn: String,
+        titleAr: String,
+        titleTr: String
+    ) {
+        putExtra(
+            PAYMENT_BUNDLE_ARGS,
+            getResultBundle(
+                userId,
+                purchaseToken,
+                identifier,
+                payload,
+                packageName
+            ).apply {
+                putString(SOURCE_SKU_ARG_KEY, sourceSku)
+                putInt(PRICE_ARG_KEY, price)
+                putInt(DISCOUNT_ARG_KEY, discount)
+                putInt(PRODUCT_TYPE_ARG_KEY, productType.value)
+                putString(TITLE_FA_ARG_KEY, titleFa)
+                putString(TITLE_EN_ARG_KEY, titleEn)
+                putString(TITLE_AR_ARG_KEY, titleAr)
+                putString(TITLE_TR_ARG_KEY, titleTr)
+            }
+        )
+    }
 
     companion object {
         private const val PAYMENT_SERVICE_ACTION = "ir.net_box.payment.PaymentService.BIND"

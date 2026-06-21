@@ -54,6 +54,7 @@ interface Payable {
      * @param discount Applied discount in Toman.
      * @return Result Bundle from the service.
      */
+    @Deprecated("Use purchaseSingleProduct for the new VAT-exclusive pricing logic.")
     fun purchaseProductWithPricing(
         sourceSku: String,
         userId: String,
@@ -81,6 +82,7 @@ interface Payable {
      * @param titleTr Localized title in Turkish.
      * @return Result Bundle from the service.
      */
+    @Deprecated("Use purchaseSingleProduct for the new VAT-exclusive pricing logic.")
     fun purchaseProduct(
         sourceSku: String,
         userId: String,
@@ -97,37 +99,37 @@ interface Payable {
     ): Bundle
 
     /**
-     * Purchases a product with pricing and localized metadata.
+     * Purchases a product with pricing and localized metadata using the new VAT-exclusive logic.
      *
-     * @param sourceSku SKU of the product.
+     * @param sourceSku Product SKU.
      * @param userId Unique identifier for the user.
      * @param purchaseToken Token for the purchase request.
-     * @param identifier UI identifier for the request.
+     * @param identifier Optional UI identifier for the request (e.g., masked phone number).
      * @param payload Correlation string for the request.
      * @param price Original product price in **Toman** (excluding VAT).
-     * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
-     * If no discount is applied, this should be equal to [price].
-     * @param vat VAT amount in **Toman**.
-     * 
-     * Note: The final amount displayed to the user and charged during checkout is calculated as:
-     * `final_price = discountedPrice + vat`
-     *
+     * @param discount Applied discount in **Toman** (excluding VAT). If no discount is applied, this value should be `0`.
      * @param productType Type of the product ([ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]).
-     * @param titleFa Localized title in Persian.
-     * @param titleEn Localized title in English.
-     * @param titleAr Localized title in Arabic.
-     * @param titleTr Localized title in Turkish.
+     * @param titleFa Localized title in Persian (Required).
+     * @param titleEn Localized title in English (Optional but recommended).
+     * @param titleAr Localized title in Arabic (Optional).
+     * @param titleTr Localized title in Turkish (Optional).
+     *
      * @return Result Bundle from the service.
+     *
+     * Note: The final price charged to the user is calculated as:
+     * 1. `discounted_price = price - discount`
+     * 2. `vat = discounted_price * 0.1`
+     * 3. `final_price = discounted_price + vat`
+     * (Note: The 10% VAT rate is subject to change based on current regulations.)
      */
-    fun purchaseProductVatInclusive(
+    fun purchaseSingleProduct(
         sourceSku: String,
         userId: String,
         purchaseToken: String,
         identifier: String = "",
         payload: String,
         price: Int,
-        discountedPrice: Int,
-        vat: Int,
+        discount: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String = "",

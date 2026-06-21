@@ -152,7 +152,7 @@ class Payment(private val context: Context, private val packageName: String) {
     /**
      * Initiates a purchase with explicit pricing.
      *
-     * @deprecated Use [purchaseProduct] instead, which supports product types and localized titles.
+     * @deprecated Use [purchaseSingleProduct] instead, which supports product types and localized titles.
      *
      * @param sourceSku The SKU to be purchased.
      * @param userId Unique User ID for synchronization.
@@ -164,10 +164,9 @@ class Payment(private val context: Context, private val packageName: String) {
      * @param callback Callback for purchase results.
      */
     @Deprecated(
-        message = "Use purchaseProduct() instead. The new version supports productType and localized titles.",
+        message = "Use purchaseSingleProduct() instead for the new VAT-exclusive pricing logic.",
         replaceWith = ReplaceWith(
-            expression = "purchaseProduct(sourceSku, userId, purchaseToken, identifier, payload, price, discount, productType, titleFa, titleEn, titleAr, titleTr, callback)",
-            imports = ["ir.net_box.store.sdk.ProductType"]
+            expression = "purchaseSingleProduct(sourceSku, userId, purchaseToken, identifier, payload, price, discount, productType, titleFa, titleEn, titleAr, titleTr, callback)"
         )
     )
     fun purchaseProductWithPricing(
@@ -194,11 +193,7 @@ class Payment(private val context: Context, private val packageName: String) {
     }
 
     /**
-     * Creates a purchase with explicit pricing and localized product metadata.
-     *
-     * This method supports both subscription and pay‑per‑view product types.
-     * After a successful purchase transaction, the SDK automatically triggers the
-     * verification API using the provided purchase token.
+     * Creates a purchase with explicit pricing and localized product metadata using legacy logic.
      *
      * @param sourceSku The unique SKU of the product to be purchased.
      * @param userId The unique user identifier associated with this purchase.
@@ -223,7 +218,10 @@ class Payment(private val context: Context, private val packageName: String) {
      * returning a [PurchaseCallback] indicating success, cancellation, or failure.
      */
     @Deprecated(
-        message = "Use the version of purchaseProduct that supports discountedPrice and vat.",
+        message = "Use purchaseSingleProduct() instead for the new VAT-exclusive pricing logic.",
+        replaceWith = ReplaceWith(
+            expression = "purchaseSingleProduct(sourceSku, userId, purchaseToken, identifier, payload, price, discount, productType, titleFa, titleEn, titleAr, titleTr, callback)"
+        )
     )
     fun purchaseProduct(
         sourceSku: String,
@@ -257,52 +255,41 @@ class Payment(private val context: Context, private val packageName: String) {
             )
         handlePurchaseResult(purchaseProduct, callback)
     }
-    
 
     /**
      * Creates a purchase with explicit pricing and localized product metadata.
      *
-     * This method supports both subscription and pay‑per‑view product types.
-     * After a successful purchase transaction, the SDK automatically triggers the
-     * verification API using the provided purchase token.
+     * This method uses the new VAT-exclusive logic. The final price charged to the user
+     * will include VAT calculated automatically on the discounted price.
      *
-     * @param sourceSku The unique SKU of the product to be purchased.
-     * @param userId The unique user identifier associated with this purchase.
-     * Used to synchronize user‑specific purchase data with your backend APIs.
-     * (Your pre‑defined APIs will be called with this `userId` if configured.)
-     * @param purchaseToken The unique token representing this purchase request.
-     * @param identifier An optional identifier shown on the purchase page/UI —
-     * for example, a masked phone number or email address.
-     * @param payload A random client‑generated string used for request correlation.
-     * It will be returned in the result bundle under the key `"payload"`.
+     * @param sourceSku Product SKU.
+     * @param userId Unique User ID for synchronization.
+     * @param purchaseToken Unique purchase token for this request.
+     * @param identifier Optional UI identifier (e.g., masked phone number).
+     * @param payload Request correlation string returned in the result bundle.
      * @param price Original product price in **Toman** (excluding VAT).
-     * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
-     * If no discount is applied, this should be equal to [price].
-     * @param vat VAT amount in **Toman**.
-     * 
-     * Note: The final amount displayed to the user and charged during checkout is calculated as:
-     * `final_price = discountedPrice + vat`
+     * @param discount Applied discount in **Toman** (excluding VAT). If no discount is applied, this value should be `0`.
+     * @param productType [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW].
+     * @param titleFa Persian title (Required).
+     * @param titleEn English title (Optional but recommended).
+     * @param titleAr Arabic title (Optional).
+     * @param titleTr Turkish title (Optional).
+     * @param callback Callback invoked upon completion of the purchase operation.
      *
-     * @param productType The product type: [ProductType.SUBSCRIPTION] for recurring
-     * billing products or [ProductType.PAY_PER_VIEW] for one‑time access items.
-     * @param titleFa The product title in **Persian (Farsi)** — *this parameter is required*
-     * and used for displaying localized purchase information in the checkout UI.
-     * @param titleEn The product title in **English** — optional but **strongly recommended**
-     * to enhance internationalized UI and cross‑language presentation.
-     * @param titleAr The product title in **Arabic** — optional, recommended for Arabic localizations.
-     * @param titleTr The product title in **Turkish** — optional, recommended for Turkish users.
-     * @param callback Callback invoked upon completion of the purchase operation,
-     * returning a [PurchaseCallback] indicating success, cancellation, or failure.
+     * Note: The final price charged to the user is calculated as:
+     * 1. `discounted_price = price - discount`
+     * 2. `vat = discounted_price * 0.1`
+     * 3. `final_price = discounted_price + vat`
+     * (Note: The 10% VAT rate is subject to change based on current regulations.)
      */
-    fun purchaseProduct(
+    fun purchaseSingleProduct(
         sourceSku: String,
         userId: String,
         purchaseToken: String,
         identifier: String = "",
         payload: String,
         price: Int,
-        discountedPrice: Int,
-        vat: Int,
+        discount: Int,
         productType: ProductType,
         titleFa: String,
         titleEn: String = "",
@@ -311,15 +298,14 @@ class Payment(private val context: Context, private val packageName: String) {
         callback: (PurchaseCallback) -> Unit
     ) {
         val purchaseProduct =
-            connection.purchaseProductVatInclusive(
+            connection.purchaseSingleProduct(
                 sourceSku,
                 userId,
                 purchaseToken,
                 identifier,
                 payload,
                 price,
-                discountedPrice,
-                vat,
+                discount,
                 productType,
                 titleFa,
                 titleEn,
@@ -328,7 +314,6 @@ class Payment(private val context: Context, private val packageName: String) {
             )
         handlePurchaseResult(purchaseProduct, callback)
     }
-
 
     /**
      * Initiates a purchase through the Netbox store interface.

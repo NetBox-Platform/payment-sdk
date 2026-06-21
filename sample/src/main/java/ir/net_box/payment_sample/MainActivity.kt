@@ -192,24 +192,19 @@ class MainActivity : AppCompatActivity() {
                 /**
                  * Create a purchase for a specific product and receive the result through a callback.
                  * For Pay‑Per‑View or subscriptions, display available plans in your UI,
-                 * then pass the selected SKU, original price (excluding VAT), discounted price (excluding VAT),
-                 * and VAT value.
+                 * then pass the selected SKU, item price (excluding VAT), and discount values.
                  *
-                 * Note: The final amount displayed to the user and charged during checkout is calculated as:
-                 * `final_price = discountedPrice + vat`
-                 *
-                 * If no discount is applied, `discountedPrice` should be equal to `price`.
+                 * This method [purchaseSingleProduct] uses the new VAT-exclusive logic.
                  */
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
-                    payment.purchaseProduct(
+                    payment.purchaseSingleProduct(
                         sourceSku = "plan-3-months",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123",
-                        price = 200000, // Original price (excluding VAT)
-                        discountedPrice = 170000, // Discounted price (excluding VAT)
-                        vat = 17000, // VAT in Toman
+                        price = 220000, // Price in Toman (excluding VAT)
+                        discount = 30000, // Discount in Toman (excluding VAT)
                         productType = ProductType.SUBSCRIPTION,
                         titleFa = "اشتراک سه ماهه",
                         titleEn = "Three‑month subscription",
@@ -263,25 +258,22 @@ class MainActivity : AppCompatActivity() {
                 /**
                  * Performs a Pay‑Per‑View purchase for a specific product.
                  *
-                 * This example shows how to call [purchaseProduct] when the
+                 * This example shows how to call [purchaseSingleProduct] when the
                  * connection is established and handle both success and failure results.
                  *
                  * - **Pricing:** in Toman (excluding VAT).
-                 * - **Final Price Calculation:** `final_price = discountedPrice + vat`
+                 * - **Final Price Calculation:** `final_price = (price - discount) + vat`
                  * - **Product Type:** [ProductType.PAY_PER_VIEW]
-                 * - **Required:** `titleFa`
-                 * - **Optional but strongly recommended:** `titleEn`, `titleAr`, `titleTr` (for showing product titles in the appropriate language based on app locale)
                  */
                 if (connection?.getConnectionState() == ConnectionState.Connected) {
-                    payment.purchaseProduct(
+                    payment.purchaseSingleProduct(
                         sourceSku = "the_jackal_s01e01_sku",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
                         identifier = "09123456789",
                         payload = "PAYLOAD_123",
                         price = 30000, // Original price (excluding VAT)
-                        discountedPrice = 25000, // Discounted price (excluding VAT)
-                        vat = 2500, // VAT in Toman
+                        discount = 5000, // Discount (excluding VAT)
                         productType = ProductType.PAY_PER_VIEW,
                         titleFa = "شغال - قسمت اول فصل اول",
                         titleEn = "The Jackal - Season 1 Episode 1",

@@ -116,13 +116,14 @@ payment.purchaseProductBySku(
 }
 ```
 
-### Purchase a product
+### Purchase a single product
 ```kotlin
   import ir.net_box.paymentclient.payment.ProductType
 
   /*
   * Purchase a product with pricing and multilanguage titles.
   * Supports both subscription and pay‑per‑view product types.
+  * This method uses the new VAT-exclusive logic.
   *
   * @param sourceSku Product SKU
   * @param userId Unique User ID
@@ -130,29 +131,34 @@ payment.purchaseProductBySku(
   * @param identifier Optional UI identifier (e.g., masked phone number)
   * @param payload Request correlation string
   * @param price Original product price in **Toman** (excluding VAT)
-  * @param discountedPrice Discounted product price in **Toman** (excluding VAT).
-  * If no discount is applied, this should be equal to `price`.
-  * @param vat VAT amount in **Toman**
-  *
-  * Note: The final amount displayed to the user and charged during checkout is calculated as:
-  * `final_price = discountedPrice + vat`
+  * @param discount Discount amount in **Toman** (excluding VAT). If no discount is applied, this value should be `0`.
   *
   * @param productType [ProductType.SUBSCRIPTION] or [ProductType.PAY_PER_VIEW]
   * @param titleFa Persian title (Required)
   * @param titleEn English title (Optional but recommended)
   * @param titleAr Arabic title (Optional)
-  * @param titleAr Turkish title (Optional)
+  * @param titleTr Turkish title (Optional)
   * @param callback Result callback
   */
-  payment.purchaseProduct(
+
+  :::tip Pricing Logic
+
+  The final price charged to the user is calculated as:
+  1. `discounted_price = price - discount`
+  2. `vat = discounted_price * 0.1`
+  3. `final_price = discounted_price + vat`
+
+  *(Note: The 0.1 represents a 10% VAT percentage, which is subject to change based on current regulations.)*
+  :::
+
+  payment.purchaseSingleProduct(
 	  sourceSku = "the_jackal_s01e01_sku", 
 	  userId = "YOUR_UNIQUE_USER_ID",
 	  purchaseToken = "YOUR_PURCHASE_TOKEN",
 	  identifier = "09123456789",
 	  payload = "PAYLOAD_123",
 	  price = 200000, 
-	  discountedPrice = 170000,
-	  vat = 17000,
+	  discount = 30000,
 	  productType = ProductType.PAY_PER_VIEW,
 	  titleFa = "شغال - قسمت اول فصل اول",
 	  titleEn = "The Jackal - Season 1 Episode 1",
@@ -261,7 +267,7 @@ if (!AppManager.isNetstoreInstalled(context)) return
 
 // Check for the minimum version required for your features:
 // - BASIC_PAYMENT: For standard SKU-based purchases.
-// - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling.
+// - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling. (When using purchaseSingleProduct)
 if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.GATEWAY_VAT_INCLUSIVE)) {
 	AppManager.updateNetstore(context)
 	return
@@ -270,3 +276,20 @@ if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion
 
 ## Full examples are available in the links below:
 [Sample1](https://github.com/NetBox-Platform/payment-sdk/blob/main/sample/src/main/java/ir/net_box/payment_sample/MainActivity.kt)
+
+# Backward Compatibility
+
+## Legacy Detailed Purchase
+> **Deprecated**: Use `purchaseSingleProduct` instead for the new VAT-exclusive logic.
+
+```kotlin
+  /*
+  * This method uses the legacy VAT-inclusive pricing logic.
+  */
+  payment.purchaseProduct(
+	  ...
+	  price = 200000, 
+	  discount = 30000,
+	  ...
+  )
+```
