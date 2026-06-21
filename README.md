@@ -117,6 +117,8 @@ payment.purchaseProductBySku(
 ```
 
 ### Purchase a single product
+> Use this method when a specific product has already been selected inside your application's UI.
+
 ```kotlin
   import ir.net_box.paymentclient.payment.ProductType
 
@@ -139,17 +141,17 @@ payment.purchaseProductBySku(
   * @param titleAr Arabic title (Optional)
   * @param titleTr Turkish title (Optional)
   * @param callback Result callback
+
+      :::tip Pricing Logic
+    
+      The final price charged to the user is calculated as:
+      1. `discounted_price = price - discount`
+      2. `vat = discounted_price * 0.1`
+      3. `final_price = discounted_price + vat`
+    
+      *(Note: The 0.1 represents a 10% VAT percentage, which is subject to change based on current regulations.)*
+      :::
   */
-
-  :::tip Pricing Logic
-
-  The final price charged to the user is calculated as:
-  1. `discounted_price = price - discount`
-  2. `vat = discounted_price * 0.1`
-  3. `final_price = discounted_price + vat`
-
-  *(Note: The 0.1 represents a 10% VAT percentage, which is subject to change based on current regulations.)*
-  :::
 
   payment.purchaseSingleProduct(
 	  sourceSku = "the_jackal_s01e01_sku", 
@@ -267,7 +269,7 @@ if (!AppManager.isNetstoreInstalled(context)) return
 
 // Check for the minimum version required for your features:
 // - BASIC_PAYMENT: For standard SKU-based purchases.
-// - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling. (When using purchaseSingleProduct)
+// - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling. (Required when using purchaseSingleProduct)
 if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.GATEWAY_VAT_INCLUSIVE)) {
 	AppManager.updateNetstore(context)
 	return
@@ -279,17 +281,20 @@ if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion
 
 # Backward Compatibility
 
-## Legacy Detailed Purchase
-> **Deprecated**: Use `purchaseSingleProduct` instead for the new VAT-exclusive logic.
+# purchaseProductWithPricing (Deprecated)
 
-```kotlin
-  /*
-  * This method uses the legacy VAT-inclusive pricing logic.
-  */
-  payment.purchaseProduct(
-	  ...
-	  price = 200000, 
-	  discount = 30000,
-	  ...
-  )
-```
+:::caution Deprecated
+
+Use [`purchaseSingleProduct()`](#purchasesingleproduct) instead. This method is maintained for backward compatibility.
+:::
+
+
+---
+
+# purchaseProduct (Deprecated)
+
+:::caution Deprecated
+
+Use [`purchaseSingleProduct()`](#purchasesingleproduct) instead. This method is maintained for backward compatibility.
+:::
+
