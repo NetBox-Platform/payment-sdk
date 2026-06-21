@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                         sourceSku = "test-sku",
                         userId = "YOUR_UNIQUE_USER_ID",
                         purchaseToken = "YOUR_PURCHASE_TOKEN",
-                        identifier = "09123456789", // Optional                        
+                        identifier = "09123456789",
                         payload = "PAYLOAD_123"
                     ) {
                         it.purchaseSucceed {
