@@ -23,40 +23,40 @@ To start using the Netbox Payment System in your app:
 
 ### Permission
 Add netbox payment permission 
-
-    <uses-permission android:name="ir.net_box.permission.PAYMENT"/>
-    
+```gradle
+<uses-permission android:name="ir.net_box.permission.PAYMENT"/>
+```
 ### Dependency
 
 Step 1. Add jitpack repository
 
 Legacy:
-
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
+```kotlin
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
 	}
-
+}
+```
 
 New gradle:
-
-    dependencyResolutionManagement {
-        repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-        repositories {
-    			...
-       			mavenCentral()
-    			maven { url 'https://jitpack.io' }
-        }
-    }
-
-Step 2. Add the dependency
-
-	dependencies {
- 		implementation 'com.github.NetBox-Platform:payment-sdk:<latest-version>'
+```kotlin
+dependencyResolutionManagement {
+	repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+	repositories {
+			...
+			mavenCentral()
+			maven { url 'https://jitpack.io' }
 	}
-	
+}
+```
+Step 2. Add the dependency
+```kotlin
+dependencies {
+	implementation 'com.github.NetBox-Platform:payment-sdk:<latest-version>'
+}
+```	
 # Usage
 
 ## Initialization
