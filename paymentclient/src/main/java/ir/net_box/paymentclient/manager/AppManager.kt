@@ -20,7 +20,8 @@ object AppManager {
         BASIC_PAYMENT(350),
         /** Support for advanced gateway features and localized products. */
         GATEWAY(360),
-        GATEWAY_VAT_INCLUSIVE(371)
+        /** Support for VAT-exclusive pricing (used by `purchaseSingleProduct`). */
+        GATEWAY_VAT_EXCLUSIVE(380)
     }
 
     private fun getPackageInfo(context: Context, packageName: String, flags: Int = 0) = try {

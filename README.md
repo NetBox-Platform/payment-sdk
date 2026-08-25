@@ -269,8 +269,8 @@ if (!AppManager.isNetstoreInstalled(context)) return
 
 // Check for the minimum version required for your features:
 // - BASIC_PAYMENT: For standard SKU-based purchases.
-// - GATEWAY_VAT_INCLUSIVE: For explicit VAT and discounted price handling. (Required when using purchaseSingleProduct)
-if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.GATEWAY_VAT_INCLUSIVE)) {
+// - GATEWAY_VAT_EXCLUSIVE: For VAT-exclusive pricing, where `price` and `discount` exclude VAT. (Required when using purchaseSingleProduct)
+if (AppManager.shouldUpdateNetstore(context, AppManager.PaymentFeatureMinVersion.GATEWAY_VAT_EXCLUSIVE)) {
 	AppManager.updateNetstore(context)
 	return
 }
